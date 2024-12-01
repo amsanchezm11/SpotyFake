@@ -1,0 +1,21 @@
+*{
+    font-family: Georgia, 'Times New Roman', Times, serif;
+}
+
+html{
+    background-color: #333;
+}
+
+.container-logo{
+    display: flex;
+    flex-direction: row;
+    gap: 30px;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+.container-logo img{
+    width: 60px;
+    height: auto;
+}
