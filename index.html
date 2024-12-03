@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +10,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script type="module" src="JS/script.js" defer></script>
 </head>
+
 <body>
-    <header>
-        <div class="container-logo">
-            <img src="IMG/logoBlue.png" alt="">
-            <h1>SpotyFake</h1>
+
+    <main>
+        <header>
+            <div class="container-logo">
+                <div class="container-buscar">
+                    <input type="search" placeholder="  🔎 Buscar">
+                    <h2>Music</h2>
+                </div>
+                
+            </div>
+            <div class="container-usuario">
+                <div class="container-foto-nombre">
+                    <img src="IMG/avatar.png" alt="">
+                    <h3>Alberto</h3>
+                </div>
+                <div class="container-agregar">
+                    <button id="principal-play" class="boton-principal">PAUSE</button>
+                    <button class="agregar">+</button>
+                </div>
+            </div>
+        </header>
+        <section>
+
+        </section>
+    </main>
+    <aside>
+        <div class="container-filtros">
+            <ul id="lista"><button id="filtros" class="filtros"><p>▶ Filtros</p></button>
+                <li class="oculto"><a href="#">Todos</a></li>
+                <li class="oculto"><a href="#">Favoritos</a></li>
+            </ul>
+        </div>     
+        <div class="container-img-aside">
+            <img src="IMG/busTrap.jpg" alt="">
         </div>
-    </header>
-    <main></main>
-    <aside></aside>
+        
+    </aside>
     <footer>
         <div id="cancionTitulo">
             <p class="titulo">Lose Yourself</p>
@@ -33,7 +64,7 @@
             </div>
             <div class="container-progreso">
                 <p>0:00</p>
-                <input type="range" name="volumen" id="" class="volumen" min="0" max="1" step="0.01">
+                <input type="range" name="volumen" id="progreso" class="volumen" min="0" max="1" step="0.01">
                 <p>99:99</p>
             </div>
         </div>
@@ -42,6 +73,7 @@
             <input type="range" name="volumen" id="inputVolumen" class="volumen" min="0" max="100" step="1" value="50">
         </div>
     </footer>
-    
+
 </body>
+
 </html>

@@ -90,3 +90,41 @@ document.getElementById("inputVolumen").addEventListener("input", (event) => {
         icono.classList.add("fa-volume-high");
     }
 });
+
+/* Función cambiarFiltro()
+*   ¿Qué hace? --> Cambia el valor del simbolo para crear un efecto de movimiento
+*   Parámetros --> El boton en el que está asociado el evento(event)
+*/
+document.getElementById("filtros").addEventListener("click",(event)=>{
+    let boton = event.target;
+    if (boton.innerHTML === "▶ Filtros") {
+        boton.innerHTML = "▼ Filtros";
+    }else{
+        boton.innerHTML = "▶ Filtros"
+    }
+});
+
+/* Función menuDesplegable()
+*   ¿Qué hace? --> Obtiene los li del documento y alterna la clase ".oculto" cada vez que se activa el evento
+*/
+document.getElementById("filtros").addEventListener("click", ()=>{
+    let listas = document.querySelectorAll("#lista li");
+
+    listas.forEach(li => {
+        li.classList.toggle("oculto");
+    });
+});
+
+/* Función cambiarNombreIcono()
+*   ¿Qué hace? --> Obtiene el elemento asociado al evento y según su contenido lo modifica
+*   Parámetros --> El boton en el que está asociado el evento(event)
+*/
+document.getElementById("principal-play").addEventListener("click", (event)=>{
+    let boton = event.target;
+
+    if (boton.innerHTML === "PAUSE") {
+        boton.innerHTML = "PLAY";
+    }else{
+        boton.innerHTML = "PAUSE";
+    }
+});
