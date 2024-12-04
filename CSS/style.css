@@ -26,10 +26,12 @@ html {
 
 body {
     height: 100vh;
+    margin: 0;
     display: grid;
-    grid-template-rows: 1fr auto;
+    grid-template-rows: auto 615px auto;
     grid-template-columns: 300px 1fr;
     grid-template-areas:
+        "aside header"
         "aside main"
         "footer footer";
 }
@@ -39,12 +41,136 @@ main {
     background-color: var(--color-secundario);
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100%; 
 }
+
+/*----------------------------------------------- [SECTION] ----------------------------------------------------------*/
 
 section {
     height: 85%;
     box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.5);
+    min-height: 85%;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-fuente-secundaria) var(--color-secundario);
+    padding: 20px;
+}
+
+section::-webkit-scrollbar {
+    display: none;
+    width: 8px;
+}
+
+table {
+    max-height: 300px;
+    overflow-y: auto;
+    border-collapse: collapse;
+}
+
+table,
+thead,
+tbody {
+    width: 100%;
+    text-align: center;
+}
+
+
+
+.fila-cabecera th {
+    width: 25%;
+    border-bottom: 1px solid lightgray;
+    color: var(--color-fuente-secundaria);
+
+}
+
+.fila-cabecera th:first-child {
+    width: 100%;
+    border-bottom: 1px solid lightgray;
+    color: var(--color-fuente-secundaria);
+    display: flex;
+    justify-content: right;
+}
+
+tbody tr td:first-child {
+    display: flex;
+    justify-content: right; 
+}
+
+.fila-cancion {
+    height: 40px;
+    font-size: 14px;
+    color: var(--color-fuente);
+    transition: background-color 0.2s ease, color 0.4s ease;
+}
+
+.fila-cancion:hover {
+    background-color: var(--color-terciario);
+    cursor: pointer;
+    color: var(--color-boton);
+}
+
+.fila-cancion td:first-child {
+    color: white;
+}
+
+.opacidad-on{
+    opacity: 1;
+    transition: opacity 0.8s;
+}
+
+.opacidad-off {
+    opacity: 0;
+    transition: opacity 0.8s;
+}
+
+.verde {
+    color: var(--color-boton);
+    font-size: 20px;
+    background: none;
+    border: none;
+    display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+.verde:hover {
+   transform: scale(1.2);
+}
+
+.th-play{
+    width: 100%;
+    height: 33px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom: 1px solid lightgray;
+}
+
+.td-play{
+    width: 50px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.td-play p{
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.botonPlay{
+    margin-top: 20px;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    background-color: var(--color-boton);
+}
+
+.botonPlay:hover{
+    background-color: var(--color-fuente);
+    color: var(--color-boton);
 }
 
 /* ----------------------------------------------- [ASIDE] -------------------------------------------------------- */
@@ -106,7 +232,7 @@ aside {
     list-style: none;
 }
 
-.container-filtros li{
+.container-filtros li {
     margin-bottom: 5px;
     font-weight: bold;
 }
@@ -120,7 +246,7 @@ aside {
 
 .oculto {
     display: none;
-} 
+}
 
 /* ----------------------------------------------- [HEADER] -------------------------------------------------------- */
 
@@ -170,7 +296,7 @@ header img {
     text-align: center;
 }
 
-.boton-principal:hover{
+.boton-principal:hover {
     background-color: #1A9E49;
 }
 
@@ -181,20 +307,22 @@ input[type="search"] {
     border: none;
 }
 
-.container-agregar{
+.container-agregar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
 
-.agregar{
+.agregar {
     width: 18px;
     height: 18px;
+    font-weight: bold;
     display: flex;
     justify-content: center;
     align-items: center;
     border: 1px solid var(--color-primario);
+    border-radius: 2px;
     box-shadow: -2px 2px 0px 0px rgb(255, 255, 255);
 }
 
@@ -202,17 +330,14 @@ input[type="search"] {
 
 footer {
     grid-area: footer;
-    position: fixed;
-    bottom: 0;
-    left: 0;
     width: 100%;
-    height: 16%;
+    height: 80px;
     background-color: var(--color-primario);
-    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.5);
-    z-index: 1;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    padding: 0 20px;
+    box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.5);
 }
 
 input[type="range"] {
@@ -316,6 +441,6 @@ input[type="range"]::-webkit-slider-runnable-track {
     margin-right: 20px;
 }
 
-#progreso{
+#progreso {
     width: 800px;
 }
