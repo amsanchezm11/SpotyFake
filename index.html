@@ -20,7 +20,7 @@
                     <input type="search" placeholder="  🔎 Buscar">
                     <h2>Music</h2>
                 </div>
-                
+
             </div>
             <div class="container-usuario">
                 <div class="container-foto-nombre">
@@ -29,25 +29,38 @@
                 </div>
                 <div class="container-agregar">
                     <button id="principal-play" class="boton-principal">PLAY</button>
-                    <button class="agregar">+</button>
+                    <button id="agregarCancion" class="agregar">+</button>
                 </div>
             </div>
         </header>
         <section id="section">
-
+            <div id="formulario" style="display:none;">
+                <i id="salir" class="fa-solid fa-x"></i>
+                <label for="">A&ntilde;adir nueva canci&oacute;n:</label>
+                <input type="file" accept=".mp3">
+                <label for="">T&iacute;tulo:</label>
+                <input type="text">
+                <label for="">Autor:</label>
+                <input type="text">
+                <label for="">Imagen de portada:</label>
+                <input type="file" accept="image/*">
+                <button type="submit">Subir</button>
+            </div>
         </section>
     </main>
     <aside>
         <div class="container-filtros">
-            <ul id="lista"><button id="filtros" class="filtros"><p>▶ Filtros</p></button>
+            <ul id="lista"><button id="filtros" class="filtros">
+                    <p>▶ Filtros</p>
+                </button>
                 <li id="todasCanciones" class="oculto"><a href="#">Todos</a></li>
                 <li id="favoritas" class="oculto"><a href="#">Favoritos</a></li>
             </ul>
-        </div>     
+        </div>
         <div class="container-img-aside">
             <img src="IMG/busTrap.jpg" alt="">
         </div>
-        
+
     </aside>
     <footer>
         <div id="cancionTitulo">
@@ -70,8 +83,9 @@
         </div>
         <div id="volumen">
             <i id="icono-volumen" class="botonBlanco fa-solid fa-volume-low"></i>
-            <input type="range" name="volumen" id="inputVolumen" class="volumen" min="0" max="100" step="1" value="50">
+            <input type="range" name="volumen" id="inputVolumen" class="volumen"  min="0" max="1" step="0.01" value="0.50">
         </div>
+        <audio id="cancionActiva" src=""></audio>
     </footer>
 
 </body>

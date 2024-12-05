@@ -41,7 +41,7 @@ main {
     background-color: var(--color-secundario);
     display: flex;
     flex-direction: column;
-    height: 100%; 
+    height: 100%;
 }
 
 /*----------------------------------------------- [SECTION] ----------------------------------------------------------*/
@@ -74,8 +74,6 @@ tbody {
     text-align: center;
 }
 
-
-
 .fila-cabecera th {
     width: 25%;
     border-bottom: 1px solid lightgray;
@@ -93,7 +91,7 @@ tbody {
 
 tbody tr td:first-child {
     display: flex;
-    justify-content: right; 
+    justify-content: right;
 }
 
 .fila-cancion {
@@ -113,7 +111,7 @@ tbody tr td:first-child {
     color: white;
 }
 
-.opacidad-on{
+.opacidad-on {
     opacity: 1;
     transition: opacity 0.8s;
 }
@@ -133,10 +131,10 @@ tbody tr td:first-child {
 }
 
 .verde:hover {
-   transform: scale(1.2);
+    transform: scale(1.2);
 }
 
-.th-play{
+.th-play {
     width: 100%;
     height: 33px;
     display: flex;
@@ -145,7 +143,7 @@ tbody tr td:first-child {
     border-bottom: 1px solid lightgray;
 }
 
-.td-play{
+.td-play {
     width: 50px;
     height: 40px;
     display: flex;
@@ -153,14 +151,14 @@ tbody tr td:first-child {
     align-items: center;
 }
 
-.td-play p{
+.td-play p {
     margin: 0;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.botonPlay{
+.botonPlay {
     margin-top: 20px;
     width: 25px;
     height: 25px;
@@ -168,10 +166,82 @@ tbody tr td:first-child {
     background-color: var(--color-boton);
 }
 
-.botonPlay:hover{
+.botonPlay:hover {
     background-color: var(--color-fuente);
     color: var(--color-boton);
 }
+
+/* ----------------------------------------------- [FORMULARIO] ---------------------------------------------------- */
+
+#formulario {
+    position: fixed;
+    left: 530px;
+    bottom: 190px;
+    z-index: 1;
+    width: 500px;
+    height: 400px;
+    background-color: lightgray;
+    border-radius: 10px;
+    box-shadow: 0 0 5px 1px var(--color-boton);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+    opacity: 0.5;
+    transform: scale(0);
+    animation: aparecerFormulario 1s ease-in-out forwards;
+}
+
+#formulario label {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+#salir {
+    cursor: pointer;
+    width: 12px;
+    align-self: flex-start;
+    margin-left: 10px;
+    color: var(--color-boton);
+}
+
+#formulario input {
+    height: 40px;
+    width: 420px;
+    border: 1px solid var(--color-fuente-secundaria);
+    border-radius: 5px;
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px 0px 10px;
+}
+
+#formulario input[type="text"] {
+    height: 40px;
+    width: 420px;
+    text-align: left;
+}
+
+#formulario input[type="text"]:focus {
+    outline: none;
+    border: 2px solid black;
+}
+
+#formulario button {
+    background-color: var(--color-boton);
+    color: var(--color-fuente);
+    font-size: 12px;
+    font-weight: bold;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 20px;
+    display: inline-block;
+    transition: transform 0.3s ease; 
+}
+
+#formulario button:hover {
+    transform: scale(1.1);
+}
+
 
 /* ----------------------------------------------- [ASIDE] -------------------------------------------------------- */
 aside {
@@ -443,4 +513,23 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 #progreso {
     width: 800px;
+}
+
+/* --------------------------------------------- [ANIMACIONES] ------------------------------------------------------ */
+
+@keyframes aparecerFormulario {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    70% {
+        transform: scale(1.1);
+        opacity: 1;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
 }

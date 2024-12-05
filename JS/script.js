@@ -49,6 +49,7 @@ function crearTabla() {
     let section = document.getElementById("section");
     // Tabla
     let tabla = document.createElement("table");
+    tabla.id = "tabla";
     // Cabecera y cuerpo de la tabla
     let tHead = document.createElement("thead");
     let tBody = document.createElement("tbody");
@@ -94,6 +95,12 @@ function rellenarTabla(canciones) {
         fila.classList.add("fila-cancion");
         fila.addEventListener("mouseenter", mostrarBoton);
         fila.addEventListener("mouseleave", mostrarBoton);
+        fila.addEventListener("click",()=>{
+            let cancionActiva = document.getElementById("cancionActiva");
+            cancionActiva.src = `${cancion.filepath}`;
+            cancionActiva.play();
+            cambiarBotones();
+        });
         let play = document.createElement("td");
         play.classList.add("td-play");
         let playTexto = document.createElement("p");
@@ -108,6 +115,7 @@ function rellenarTabla(canciones) {
         let artista = document.createElement("td");
         artista.innerHTML = cancion.artist;
         let duracion = document.createElement("td");
+        obtenerDuracion(cancion.filepath, duracion);
         // FALTA PONER EL TEXTO DE LA DURACIÓN
         let favorito = document.createElement("td");
         let favIcono = document.createElement("i");
@@ -150,6 +158,56 @@ function comprobarRegex(element, regex) {
     }
 }
 
+/* -------------------------------------------------- [ AUDIO ] ----------------------------------------------------- */
+
+/* Función obtenerDuracion()
+*   ¿Qué hace? --> Crea un elemento audio y le añade el path de la canción introducida por parámetro. Luego 
+*                  al elemento audio le asigna un evento de "loadedmetadata" para obtener la duración exacta
+*                  de la canción. Calcula los minutos y los segundos y se lo pasa a la variable tiempo
+*   Parámetros --> El path de la canción(file) y la variable tiempo que es donde se va a mostrar duración
+*                  de la canción
+*/
+function obtenerDuracion(file, tiempo) {
+    let cancion = document.createElement("audio");
+    cancion.src = `${file}`;
+
+    cancion.addEventListener("loadedmetadata", ()=>{
+        let duracion = cancion.duration;
+        let minutos = Math.floor(duracion /60);
+        let segundos = Math.floor(duracion % 60);
+
+        tiempo.innerHTML = `${minutos}:${segundos <10? "0":""}${segundos}`;
+    });
+}
+
+/* Función pausarCancion()
+*   ¿Qué hace? --> Comprueba si el elemento audio está sonando o está en pausa y lo cambia
+*/
+document.getElementById("play").addEventListener("click", pausarCancion);
+document.getElementById("principal-play").addEventListener("click", pausarCancion);
+function pausarCancion() {
+    let cancionActiva = document.getElementById("cancionActiva");
+    document.getElementById("play").click();
+    document.getElementById("principal-play").click();
+    if (cancionActiva.paused) {
+        cancionActiva.play();
+    }else{
+        cancionActiva.pause();
+    }
+}
+
+/* Función cambiarVolumen()
+*   ¿Qué hace? --> Obtiene el valor del input asociado al evento y se lo aplica al volumen del elemento audio
+*   Parámetros --> El input en el que está asociado el evento(event)
+*/
+document.getElementById("inputVolumen").addEventListener("input", (event)=>{
+    let volumenInput = event.target.value;
+    let cancionActiva = document.getElementById("cancionActiva");
+    cancionActiva.volume = volumenInput;
+});
+
+
+
 /* -------------------------------------------------- [ BOTONES ] ----------------------------------------------------- */
 
 /* Función cambiarBoton()
@@ -160,13 +218,28 @@ function comprobarRegex(element, regex) {
 document.getElementById("play").addEventListener("click", (event) => {
     let boton = event.currentTarget;
     let icono = boton.querySelector("i");
-
+    cambiarPlayPrincipal();
+    
     if (icono.classList.contains("fa-play")) {
         icono.classList.remove("fa-play");
         icono.classList.add("fa-pause");
     } else {
         icono.classList.remove("fa-pause");
         icono.classList.add("fa-play");
+    }
+});
+
+/* Función cambiarNombreIcono()
+*   ¿Qué hace? --> Obtiene el elemento asociado al evento y según su contenido lo modifica
+*   Parámetros --> El boton en el que está asociado el evento(event)
+*/
+document.getElementById("principal-play").addEventListener("click", (event)=>{
+    let boton = event.target;
+    cambiarPlay();
+    if (boton.innerHTML === "PAUSE") {
+        boton.innerHTML = "PLAY";
+    }else{
+        boton.innerHTML = "PAUSE";
     }
 });
 
@@ -203,9 +276,9 @@ document.getElementById("inputVolumen").addEventListener("input", (event) => {
     icono.classList.remove("fa-volume-xmark", "fa-volume-off", "fa-volume-low", "fa-volume-high"); 
     if (volumenValor == 0) {
         icono.classList.add("fa-volume-xmark");
-    } else if (volumenValor < 20) {
+    } else if (volumenValor < 0.20) {
         icono.classList.add("fa-volume-off");
-    } else if (volumenValor < 80) {
+    } else if (volumenValor < 0.80) {
         icono.classList.add("fa-volume-low");
     } else {
         icono.classList.add("fa-volume-high");
@@ -236,20 +309,6 @@ document.getElementById("filtros").addEventListener("click", ()=>{
     });
 });
 
-/* Función cambiarNombreIcono()
-*   ¿Qué hace? --> Obtiene el elemento asociado al evento y según su contenido lo modifica
-*   Parámetros --> El boton en el que está asociado el evento(event)
-*/
-document.getElementById("principal-play").addEventListener("click", (event)=>{
-    let boton = event.target;
-
-    if (boton.innerHTML === "PAUSE") {
-        boton.innerHTML = "PLAY";
-    }else{
-        boton.innerHTML = "PAUSE";
-    }
-});
-
 /* Función mostrarTodasLasCanciones()
 *  ¿Qué hace? --> Al pulsar el enlace con el evento asociado creará una tabla y la mostrará en el sectión de
 *                 la página web. Primero obtiene todas las canciones y luego crea la tabla y la rellena con
@@ -264,7 +323,12 @@ document.getElementById("todasCanciones").addEventListener("click", async (event
     let section = document.getElementById("section");
     // En caso de que tenga contenido lo limpiamos
     if (section.hasChildNodes()) {
-        section.innerHTML = "";
+        if (section.lastChild.id === "tabla") {
+            section.removeChild(section.lastChild);
+        }else{
+            let formulario = document.getElementById("formulario");
+            formulario.style.display = "none";
+        }
     }
     // Creamos la tabla
     crearTabla();
@@ -310,3 +374,126 @@ function mostrarBoton(event) {
         }
     }
 }
+
+function cambiarBotones() {
+    let playPrincipal = document.getElementById("principal-play");
+    let play = document.getElementById("play");
+    let playIcono = play.querySelector("i");
+
+    if (playPrincipal.innerHTML === "PAUSE") {
+        playPrincipal.innerHTML = "PLAY";
+    }else{
+        playPrincipal.innerHTML = "PAUSE";
+    }
+  
+    if (playIcono.classList.contains("fa-play")) {
+        playIcono.classList.remove("fa-play");
+        playIcono.classList.add("fa-pause");
+    } else {
+        playIcono.classList.remove("fa-pause");
+        playIcono.classList.add("fa-play");
+    }
+}
+
+//document.getElementById("play").addEventListener("click", cambiarPlay);
+function cambiarPlay() {
+    let play = document.getElementById("play");
+    let playIcono = play.querySelector("i");
+    //cambiarPlayPrincipal();
+
+    if (playIcono.classList.contains("fa-play")) {
+        playIcono.classList.remove("fa-play");
+        playIcono.classList.add("fa-pause");
+    } else {
+        playIcono.classList.remove("fa-pause");
+        playIcono.classList.add("fa-play");
+    }
+}
+
+//document.getElementById("principal-play").addEventListener("click", cambiarPlayPrincipal);
+function cambiarPlayPrincipal() {
+    let playPrincipal = document.getElementById("principal-play");
+    //cambiarPlay();
+
+    if (playPrincipal.innerHTML === "PAUSE") {
+        playPrincipal.innerHTML = "PLAY";
+    }else{
+        playPrincipal.innerHTML = "PAUSE";
+    }
+}
+
+/* -------------------------------------------------- [ FORMULARIO ] ------------------------------------------------ */
+
+document.getElementById("agregarCancion").addEventListener("click", cerrarFormulario);
+document.getElementById("salir").addEventListener("click", cerrarFormulario);
+// document.getElementById("agregarCancion").addEventListener("click", abrirFormulario);
+// document.getElementById("salir").addEventListener("click", abrirFormulario);
+function cerrarFormulario(event) {
+    //event.stopPropagation();
+    let section = document.getElementById("section");
+    let formulario = document.getElementById("formulario");
+    
+    if (section.hasChildNodes()) {
+        if (!section.lastChild.id === "formulario") {
+            section.removeChild(section.lastChild);       
+        }
+        
+    }
+
+    if (formulario) {
+        if (formulario.style.display === "none") {
+            formulario.style.display = "flex";
+        } else {
+            formulario.style.display = "none";
+        }
+    }
+
+}
+
+
+// document.addEventListener("click", (event)=>{
+//     event.stopPropagation();
+//     let formulario = document.getElementById("formulario");
+//     let botonAgregar = document.getElementById("agregarCancion");
+//     let botonCerrar = document.getElementById("salir")
+
+//     if (!formulario.contains(event.target) && !botonCerrar.contains(event.target) && !botonAgregar.contains(event.target)) {
+//        cerrarFormulario();
+//     }else{
+//         cerrarFormulario();
+//     }
+
+// });
+
+
+// function abrirFormulario(event) {
+//     event.stopPropagation();
+//     let section = document.getElementById("section");
+//     let formulario = document.getElementById("formulario");
+
+//    
+//     // if (formulario.style.display !== "flex") {
+//     //     formulario.style.display = "flex"; 
+//     // }
+
+//     if (formulario && formulario.style.display !== "flex") {
+//         formulario.style.display = "flex";
+//     }
+    
+// }
+
+// function cerrarFormulario() {
+//     let section = document.getElementById("section");
+//     let formulario = document.getElementById("formulario");
+   
+//     if (formulario && formulario.style.display !== "none") {
+//         formulario.style.display = "none";
+//     }
+    
+//     if (formulario && section.hasChildNodes()) {
+//         if (section.lastChild.id === "formulario") {
+//             section.removeChild(formulario);
+//         }
+//     }
+// }
+
