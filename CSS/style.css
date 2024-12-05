@@ -78,7 +78,7 @@ tbody {
     width: 25%;
     border-bottom: 1px solid lightgray;
     color: var(--color-fuente-secundaria);
-
+    font-weight: 500;
 }
 
 .fila-cabecera th:first-child {
@@ -176,10 +176,11 @@ tbody tr td:first-child {
 #formulario {
     position: fixed;
     left: 530px;
-    bottom: 190px;
+    bottom: 160px;
     z-index: 1;
     width: 500px;
-    height: 400px;
+    height: 420px;
+    padding: 10px;
     background-color: lightgray;
     border-radius: 10px;
     box-shadow: 0 0 5px 1px var(--color-boton);
@@ -195,13 +196,13 @@ tbody tr td:first-child {
 #formulario label {
     font-weight: bold;
     font-size: 14px;
+    margin-bottom: 10px;
 }
 
 #salir {
     cursor: pointer;
     width: 12px;
     align-self: flex-start;
-    margin-left: 10px;
     color: var(--color-boton);
 }
 
@@ -240,6 +241,20 @@ tbody tr td:first-child {
 
 #formulario button:hover {
     transform: scale(1.1);
+}
+
+.avisoR {
+    font-weight: bold;
+    color: red;
+    font-size: 10px;
+    margin: 10px 0;
+}
+
+.avisoV {
+    font-weight: bold;
+    color: green;
+    font-size:  10px;
+    margin: 10px 0;
 }
 
 
@@ -404,20 +419,21 @@ footer {
     height: 80px;
     background-color: var(--color-primario);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
-    padding: 0 20px;
+    /* padding: 0 20px; */
     box-shadow: 0px -4px 10px rgba(0, 0, 0, 0.5);
 }
 
 input[type="range"] {
     -webkit-appearance: none;
-    appearance: none;
+    appearance: none;   
     height: 10px;
     border-radius: 15px;
     cursor: pointer;
     accent-color: black;
-    background-color: black;
+    background: linear-gradient(to right, #111 50%, #777 50%);
+    outline: none;
 }
 
 input[type="range"]:active {
@@ -430,13 +446,13 @@ input[type="range"]::-webkit-slider-thumb {
     appearance: none;
     width: 10px;
     height: 10px;
-    background: black;
+    /* background: black; */
     border-radius: 50%;
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
     height: 10px;
-    background: gray;
+    background: transparent;
     border-radius: 5px;
 }
 
@@ -494,7 +510,8 @@ input[type="range"]::-webkit-slider-runnable-track {
 }
 
 #cancionTitulo {
-    margin-left: 20px;
+    /* margin-left: 20px; */
+    width: 200px;
 }
 
 .titulo {
@@ -507,9 +524,9 @@ input[type="range"]::-webkit-slider-runnable-track {
     text-shadow: 2px 2px 2px rgba(0, 0, 0, 0.9);
 }
 
-#volumen {
-    margin-right: 20px;
-}
+/* #volumen {
+     margin-right: 20px; 
+} */
 
 #progreso {
     width: 800px;

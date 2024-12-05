@@ -39,6 +39,47 @@ async function obtenerCanciones(url) {
     }
 }
 
+/* Función obtenerCanciones()
+*  ¿Qué hace? --> Obtiene los datos del formulario los añade a un formData y lo añade a la Base de Datos
+*  Parámetros --> Botón asociado al evento(event)
+*/
+document.getElementById("subir").addEventListener("click", subirCancion);
+async function subirCancion(event) {
+    event.preventDefault();
+
+    if (checkInputs()) {
+        
+        const formData = new FormData();
+
+        let archivo = document.getElementById("archivo").files[0];
+        let titulo = document.getElementById("titulo").value;
+        let autor = document.getElementById("autor").value;
+        let cover = document.getElementById("cover").files[0];
+
+        formData.append("music", archivo);
+        formData.append("title", titulo);
+        formData.append("artist", autor);  
+        formData.append("cover", cover);
+    
+        try {
+            const response = await fetch("http://informatica.iesalbarregas.com:7008/upload", {
+                method: "POST",
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error al subir la canción: ${response.status}`);
+            }
+
+            const resultado = await response.json();
+     
+        } catch (error) {
+            console.error("Error al subir los datos de la canción:", error);
+        }
+
+    }
+}
+
 /* ---------------------------------------------- [ DOM ] ------------------------------------------------------------ */
 
 /* Función crearTabla()
@@ -158,6 +199,84 @@ function comprobarRegex(element, regex) {
     }
 }
 
+/* Función checkInputs()
+*  ¿Qué hace? --> Comprueba que todos los inputs del formulario estén bien
+   Devuelve --> True/False
+*/
+function checkInputs() {
+
+    let avisoTitulo = document.getElementById("aviso-titulo");
+    let avisoAutor = document.getElementById("aviso-autor");
+    let avisoCancion = document.getElementById("aviso-cancion");
+    let titulo = document.getElementById("titulo");
+    let autor = document.getElementById("autor");
+    let todoOk = true;
+
+    //todoOk = checkTexto(titulo);
+
+    if (!checkTexto(titulo)) {
+        todoOk = false;
+        cambiarClase(avisoTitulo);
+        avisoTitulo.innerHTML = "Longitud máxima del texto 20";
+    } else {
+        cambiarClase(avisoTitulo);
+        avisoTitulo.innerHTML = ""; 
+    }
+
+    if (todoOk) {
+        if (!checkTexto(autor)) {
+            todoOk = false;
+            cambiarClase(avisoAutor);
+            avisoAutor.innerHTML = "Longitud máxima del texto 20";
+        } else {
+            cambiarClase(avisoAutor);
+            avisoAutor.innerHTML = "";
+        }
+    }
+
+    if (todoOk) {
+        cambiarClase(avisoCancion);
+        avisoCancion.innerHTML = "Canción añadida correctamente.";
+    } else {
+        avisoCancion.innerHTML = "";
+    }
+
+    // if (!todoOk) {
+    //     todoOk = checkTexto(autor);
+    // }else{
+    //     cambiarClase(avisoTitulo);
+    //     avisoTitulo.innerHTML = "";
+    //     avisoTitulo.innerHTML = "Longitud máxima del texto 20";
+    // }
+
+    // if (!todoOk) {
+    //     cambiarClase(avisoAutor);
+    //     avisoAutor.innerHTML = "";
+    //     avisoAutor.innerHTML = "Longitud máxima del texto 20";
+    // } else {
+    //     cambiarClase(avisoTitulo);
+    //     cambiarClase(avisoAutor);
+    //     avisoCancion.innerHTML = "";
+    //     avisoCancion.innerHTML = "Canción añadida correctamente.";
+    // }
+    return todoOk;
+}
+
+/* Función cambiarClase()
+*  ¿Qué hace? --> Dependiendo de la clase que tenga el elemento le cambia la clase
+*  Parámetros --> El elemento al que se le quiere cambiar la clase(element)
+*/
+function cambiarClase(elemento) {
+    if (elemento.classList.contains("avisoV")) {
+        elemento.classList.remove("avisoV");
+        elemento.classList.add("avisoR");
+    }else{
+        elemento.classList.remove("avisoR");
+        elemento.classList.add("avisoV");
+    }
+   
+}
+
 /* -------------------------------------------------- [ AUDIO ] ----------------------------------------------------- */
 
 /* Función obtenerDuracion()
@@ -206,7 +325,20 @@ document.getElementById("inputVolumen").addEventListener("input", (event)=>{
     cancionActiva.volume = volumenInput;
 });
 
+/* Función asignarRepetir(
+*   ¿Qué hace? --> Comprueba si el elemento audio tiene el atributo loop y en caso de que lo tenga se lo quita
+*                  y viceversa
+*/
+document.getElementById("repetir").addEventListener("click", asignarRepetir);
+function asignarRepetir() {
+    let audio = document.getElementById("cancionActiva");
 
+    if (audio.loop) {
+        audio.removeAttribute("loop")
+    }else{
+        audio.setAttribute("loop", true);
+    }   
+}
 
 /* -------------------------------------------------- [ BOTONES ] ----------------------------------------------------- */
 
@@ -497,3 +629,17 @@ function cerrarFormulario(event) {
 //     }
 // }
 
+
+/* Función barraProgreso()
+*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
+*  Parámetros --> Input asociado al evento(event)
+*/
+document.getElementById("inputVolumen").addEventListener("input", barraProgreso);
+function barraProgreso(event) {
+    
+    let nivelVolumen = event.target;
+    console.log(nivelVolumen);
+    let cancionactiva = document.getElementById("cancionActiva");
+    cancionactiva.volume = nivelVolumen.value;
+    nivelVolumen.style.background = `linear-gradient(to right, #111 ${nivelVolumen.value*100}%, #777 ${nivelVolumen.value*100}%)`;
+}

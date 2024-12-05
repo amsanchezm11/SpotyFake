@@ -12,7 +12,6 @@
 </head>
 
 <body>
-
     <main>
         <header>
             <div class="container-logo">
@@ -37,14 +36,17 @@
             <div id="formulario" style="display:none;">
                 <i id="salir" class="fa-solid fa-x"></i>
                 <label for="">A&ntilde;adir nueva canci&oacute;n:</label>
-                <input type="file" accept=".mp3">
+                <input id="archivo" type="file" accept=".mp3">
                 <label for="">T&iacute;tulo:</label>
-                <input type="text">
+                <input id="titulo" type="text">
+                <p id="aviso-titulo" class="avisoV"></p>
                 <label for="">Autor:</label>
-                <input type="text">
+                <input id="autor" type="text">
+                <p id="aviso-autor" class="avisoV"></p>
                 <label for="">Imagen de portada:</label>
-                <input type="file" accept="image/*">
-                <button type="submit">Subir</button>
+                <input id="cover" type="file" accept="image/*">
+                <p id="aviso-cancion" class="avisoR"></p>
+                <button id="subir" type="submit">Subir</button>
             </div>
         </section>
     </main>
@@ -60,7 +62,6 @@
         <div class="container-img-aside">
             <img src="IMG/busTrap.jpg" alt="">
         </div>
-
     </aside>
     <footer>
         <div id="cancionTitulo">
