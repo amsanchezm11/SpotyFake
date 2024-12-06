@@ -150,7 +150,6 @@ function rellenarTabla(canciones) {
         fila.addEventListener("dblclick",()=>{
             let cancionActiva = document.getElementById("cancionActiva");
             cancionActiva.src = `${cancion.filepath}`;
-            cancionActiva.play();
             cambiarBotones();
             destacarCancionActiva(fila.id);          
         });
@@ -161,26 +160,22 @@ function rellenarTabla(canciones) {
         let playTexto = document.createElement("p");
         playTexto.innerHTML = "▶";
         playTexto.classList.add("botonPlay","opacidad-off");
-        //let playIcono = document.createElement("i");
-        //playIcono.classList.add("botonPlay", "fa-solid","fa-play");
         let titulo = document.createElement("td");
-        //play.appendChild(playIcono);
         play.appendChild(playTexto);
         titulo.innerHTML = cancion.title;
         let artista = document.createElement("td");
         artista.innerHTML = cancion.artist;
         let duracion = document.createElement("td");
         obtenerDuracion(cancion.filepath, duracion);
-        // FALTA PONER EL TEXTO DE LA DURACIÓN
         let favorito = document.createElement("td");
         let favIcono = document.createElement("i");
         favIcono.classList.add("verde");
         favIcono.id = `cambiarCorazon${cancion.id}`;
         favIcono.classList.add("verde", "fa-regular", "fa-heart");
-        favIcono.addEventListener("click", cambiarCorazon);      
+        favIcono.addEventListener("click", cambiarCorazon);
+
         favorito.appendChild(favIcono);
         fila.append(play,titulo,artista,duracion,favorito);
-        // Añadimos elementos 
         tBody.appendChild(fila);
     });
 }
@@ -255,24 +250,6 @@ function checkInputs() {
         avisoCancion.innerHTML = "";
     }
 
-    // if (!todoOk) {
-    //     todoOk = checkTexto(autor);
-    // }else{
-    //     cambiarClase(avisoTitulo);
-    //     avisoTitulo.innerHTML = "";
-    //     avisoTitulo.innerHTML = "Longitud máxima del texto 20";
-    // }
-
-    // if (!todoOk) {
-    //     cambiarClase(avisoAutor);
-    //     avisoAutor.innerHTML = "";
-    //     avisoAutor.innerHTML = "Longitud máxima del texto 20";
-    // } else {
-    //     cambiarClase(avisoTitulo);
-    //     cambiarClase(avisoAutor);
-    //     avisoCancion.innerHTML = "";
-    //     avisoCancion.innerHTML = "Canción añadida correctamente.";
-    // }
     return todoOk;
 }
 
@@ -313,22 +290,6 @@ function obtenerDuracion(file, tiempo) {
     });
 }
 
-/* Función pausarCancion()
-*   ¿Qué hace? --> Comprueba si el elemento audio está sonando o está en pausa y lo cambia
-*/
-document.getElementById("play").addEventListener("click", pausarCancion);
-document.getElementById("principal-play").addEventListener("click", pausarCancion);
-function pausarCancion() {
-    let cancionActiva = document.getElementById("cancionActiva");
-    //document.getElementById("play").click();
-    //document.getElementById("principal-play").click();
-    if (cancionActiva.paused) {
-        cancionActiva.play();
-    }else{
-        cancionActiva.pause();
-    }
-}
-
 /* Función cambiarVolumen()
 *   ¿Qué hace? --> Obtiene el valor del input asociado al evento y se lo aplica al volumen del elemento audio
 *   Parámetros --> El input en el que está asociado el evento(event)
@@ -361,33 +322,33 @@ function asignarRepetir() {
 *                  cambia una clase por otra
 *   Parámetros --> El boton en el que está asociado el evento(event)
 */
-document.getElementById("play").addEventListener("click", (event) => {
-    let boton = event.currentTarget;
-    let icono = boton.querySelector("i");
-    cambiarPlayPrincipal();
+// document.getElementById("play").addEventListener("click", (event) => {
+//     let boton = event.currentTarget;
+//     let icono = boton.querySelector("i");
+//     cambiarPlayPrincipal();
     
-    if (icono.classList.contains("fa-play")) {
-        icono.classList.remove("fa-play");
-        icono.classList.add("fa-pause");
-    } else {
-        icono.classList.remove("fa-pause");
-        icono.classList.add("fa-play");
-    }
-});
+//     if (icono.classList.contains("fa-play")) {
+//         icono.classList.remove("fa-play");
+//         icono.classList.add("fa-pause");
+//     } else {
+//         icono.classList.remove("fa-pause");
+//         icono.classList.add("fa-play");
+//     }
+// });
 
 /* Función cambiarNombreIcono()
 *   ¿Qué hace? --> Obtiene el elemento asociado al evento y según su contenido lo modifica
 *   Parámetros --> El boton en el que está asociado el evento(event)
 */
-document.getElementById("principal-play").addEventListener("click", (event)=>{
-    let boton = event.target;
-    cambiarPlay();
-    if (boton.innerHTML === "PAUSE") {
-        boton.innerHTML = "PLAY";
-    }else{
-        boton.innerHTML = "PAUSE";
-    }
-});
+// document.getElementById("principal-play").addEventListener("click", (event)=>{
+//     let boton = event.target;
+//     cambiarPlay();
+//     if (boton.innerHTML === "PAUSE") {
+//         boton.innerHTML = "PLAY";
+//     }else{
+//         boton.innerHTML = "PAUSE";
+//     }
+// });
 
 /* Función cambiarColor()
 *   ¿Qué hace? --> Comprueba que si el icono tiene la clase "botonBlanco" o "botonVerde" y dependiendo del valor
@@ -521,50 +482,30 @@ function mostrarBoton(event) {
     }
 }
 
+/* Función cambiarBotones()
+*   ¿Qué hace? --> Comprueba si la cancion activa esta en pausa o no y en función de su estado cambia los botones play del 
+*                  reproductor y play del header. También reproduce o pausa la canción.
+*/
+document.getElementById("play").addEventListener("click", cambiarBotones);
+document.getElementById("principal-play").addEventListener("click", cambiarBotones);
 function cambiarBotones() {
     let playPrincipal = document.getElementById("principal-play");
     let play = document.getElementById("play");
     let playIcono = play.querySelector("i");
+    let cancionActiva = document.getElementById("cancionActiva");
 
-    if (playPrincipal.innerHTML === "PAUSE") {
-        playPrincipal.innerHTML = "PLAY";
-    }else{
+    if (cancionActiva.paused) {
+        // Si la canción está pausada, reproducirla
         playPrincipal.innerHTML = "PAUSE";
-    }
-  
-    if (playIcono.classList.contains("fa-play")) {
         playIcono.classList.remove("fa-play");
         playIcono.classList.add("fa-pause");
+        cancionActiva.play(); // Reproducir la canción
     } else {
-        playIcono.classList.remove("fa-pause");
-        playIcono.classList.add("fa-play");
-    }
-}
-
-//document.getElementById("play").addEventListener("click", cambiarPlay);
-function cambiarPlay() {
-    let play = document.getElementById("play");
-    let playIcono = play.querySelector("i");
-    //cambiarPlayPrincipal();
-
-    if (playIcono.classList.contains("fa-play")) {
-        playIcono.classList.remove("fa-play");
-        playIcono.classList.add("fa-pause");
-    } else {
-        playIcono.classList.remove("fa-pause");
-        playIcono.classList.add("fa-play");
-    }
-}
-
-//document.getElementById("principal-play").addEventListener("click", cambiarPlayPrincipal);
-function cambiarPlayPrincipal() {
-    let playPrincipal = document.getElementById("principal-play");
-    //cambiarPlay();
-
-    if (playPrincipal.innerHTML === "PAUSE") {
+        // Si la canción está en reproducción, pausarla
         playPrincipal.innerHTML = "PLAY";
-    }else{
-        playPrincipal.innerHTML = "PAUSE";
+        playIcono.classList.remove("fa-pause");
+        playIcono.classList.add("fa-play");
+        cancionActiva.pause(); // Pausar la canción
     }
 }
 
@@ -648,8 +589,8 @@ function cerrarFormulario(event) {
 *  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
 *  Parámetros --> Input asociado al evento(event)
 */
-document.getElementById("inputVolumen").addEventListener("input", barraProgreso);
-function barraProgreso(event) {
+document.getElementById("inputVolumen").addEventListener("input", barraProgresoVolumen);
+function barraProgresoVolumen(event) {
     
     let nivelVolumen = event.target;
     console.log(nivelVolumen);
@@ -661,18 +602,18 @@ function barraProgreso(event) {
 
 /* -------------------------------------------------- [ CANCION ] ----------------------------------------------------- */
 
-/* Función barraProgreso()
-*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
-*  Parámetros --> Input asociado al evento(event)
+/* Función asignarCover()
+*  ¿Qué hace? --> Obtiene el elemento donde va a ir la imagen de la portada y le asigna el src(path) obtenido del parámetro
+*  Parámetros --> El path de la imagen de la canción actual
 */
 function asignarCover(path) {
     let cover = document.getElementById("imagenCover");
     cover.src = path;
 }
 
-/* Función barraProgreso()
-*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
-*  Parámetros --> Input asociado al evento(event)
+/* Función asignarNombre()
+*  ¿Qué hace? --> Obtiene los elementos donde va a ir el titulo y el autor y le asigna los valores obtenido de los parámetros
+*  Parámetros --> El titulo y autor de la canción actual
 */
 function asignarNombre(titulo, autor) {
     let tituloParrafo = document.getElementById("titulo-parrafo");
@@ -683,7 +624,8 @@ function asignarNombre(titulo, autor) {
 }
 
 /* Función atualizarTiempo()
-*  ¿Qué hace? --> Obtiene el la duración de la canción que está activa y a través del evento timeupdate
+*  ¿Qué hace? --> Obtiene el la duración de la canción que está activa y a través del evento timeupdate. También llama a la función
+*                 actualizarBarraProgreso() que actualiza la barra de progreso de la canción.
 *  Parámetros --> Input asociado al evento(event)
 */
 document.getElementById("cancionActiva").addEventListener("timeupdate", function() {
@@ -700,8 +642,15 @@ document.getElementById("cancionActiva").addEventListener("timeupdate", function
         tiempoTexto.innerHTML = formatoTiempo(tiempoActual);
     }
 
+    actualizarBarraProgreso();
+
 });
 
+/* Función formatoTiempo()
+*  ¿Qué hace? --> Obtiene la tiempo actual de la canción que está activa en segundos y los transforma en minutos y segundos
+*  Parámetros --> Los segundos totales que dura la canción actual
+*  ¿Qé devuelve? --> Devuelve los minutos y segundos por donde va la canción en "formato tiempo" 00:00
+*/
 function formatoTiempo(segundos) {
     let minutos = Math.floor(segundos / 60);
     let segundosRestantes = Math.floor(segundos % 60);
@@ -744,7 +693,7 @@ function mostrarResultadosCanciones(canciones, filtro = '') {
 }
 
 
-/* Función mostrarResultadosCanciones()
+/* Función destacarCancionActiva()
 *  ¿Qué hace? --> Obtiene todas las filas de la tabla y según el id de la fila que se le pasa por 
 *                 parámetro cambia el fondo de la fila a un tono más claro para descarla
 *  Parámetros --> Id de la fila a destacar(idFilaActiva)
@@ -763,17 +712,39 @@ function destacarCancionActiva(idFilaActiva) {
     }
 }
 
-document.getElementById("progreso").addEventListener("input", barraProgresoCancion);
-function barraProgresoCancion(event) {
+
+/* Función cambiarProgreso()
+*  ¿Qué hace? --> Obtiene el input y obtiene la cancion actual y modifica el currentTime en función del valor por la duración de la canción.
+*                 Si el usuario pulsa en cualquier parte del input range pondrá el momento equivalente de la canción. 
+*  Parámetros --> El input tipo "range" que va a ser modificado(event)
+*/
+document.getElementById("progreso").addEventListener("input", cambiarProgreso);
+function cambiarProgreso(event) {
     
-    let nivelVolumen = event.target;
-    console.log(nivelVolumen);
-    let cancionactiva = document.getElementById("cancionActiva");
-    cancionactiva.volume = nivelVolumen.value;
-    nivelVolumen.style.background = `linear-gradient(to right, #111 ${nivelVolumen.value*100}%, #777 ${nivelVolumen.value*100}%)`;
+    let progresoBarra = event.target;
+    let cancionActiva = document.getElementById("cancionActiva");
+    cancionActiva.currentTime = progresoBarra.value * cancionActiva.duration;
+}
+
+/* Función actualizarBarraProgreso()
+*  ¿Qué hace? --> Obtiene el input y la canción actual y calcula el valor del range en función del tiempo actual de la canción(currentTime)
+*                 y de la duración total de la canción. Una vez calculado "pinta"/"modifica" la barra de progreso mediante el estilo.
+*/
+function actualizarBarraProgreso() {
+    let cancionActiva = document.getElementById("cancionActiva");
+    let progresoBarra = document.getElementById("progreso");
+    let progreso = (cancionActiva.currentTime / cancionActiva.duration) * 100;
+
+    progresoBarra.value = progreso;
+    progresoBarra.style.background = `linear-gradient(to right, #111 ${progreso}%, #777 ${progreso}%)`;
 }
 
 
 
 // PARA CALCULAR EL VALOR DE LA BARRA DE PROGRESO
-Math.min((tiempoactual / tiempototal)*100);
+//Math.min((tiempoactual / tiempototal)*100);       BORRAR SI NO SE NECESITA
+
+function calcularProgreso(tiempoActual,tiempoTotal) {
+    return Math.min((tiempoActual / tiempoTotal)*100);
+ }
+ 
