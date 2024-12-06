@@ -1,3 +1,9 @@
+/* ---------------------------------------------- [ GLOBAL ] ------------------------------------------------------------ */
+
+/*  Para poder tomar el valor del índice de la canción actual correctamente y así poder pasar de canción tanto
+*   a la anterior como a la siguiente. 
+*/
+let indiceActual = 0;
 /* ---------------------------------------------- [ FETCH ] ------------------------------------------------------------ */
 
 /* Función mostrarCanciones()
@@ -138,28 +144,32 @@ function crearTabla() {
 *  Parámetros --> Lista de canciones obtenida de la Base de Datos
 */
 function rellenarTabla(canciones) {
-    // Contenedor
     let tBody = document.getElementById("tBody");
-
-    canciones.forEach(cancion => {
+    
+    canciones.forEach((cancion, indice) => {
+        // Creamos la fila y le asignamos los eventos correspondientes
         let fila = document.createElement("tr");
         fila.id = `fila-${cancion.id}`;
         fila.classList.add("fila-cancion");
         fila.addEventListener("mouseenter", mostrarBoton);
         fila.addEventListener("mouseleave", mostrarBoton);
-        fila.addEventListener("dblclick",()=>{
+        fila.addEventListener("dblclick", () => {
             let cancionActiva = document.getElementById("cancionActiva");
             cancionActiva.src = `${cancion.filepath}`;
             cambiarBotones();
-            destacarCancionActiva(fila.id);          
+            destacarCancionActiva(fila.id);   
+            indiceActual = indice; 
+            console.log(indiceActual);             
         });
         fila.addEventListener("dblclick", () => asignarCover(cancion.cover));
-        fila.addEventListener("dblclick", () => {asignarNombre(cancion.title, cancion.artist)});
+        fila.addEventListener("dblclick", () => { asignarNombre(cancion.title, cancion.artist)});
+
+        // Creamos los elementos que van a ir en la fila
         let play = document.createElement("td");
         play.classList.add("td-play");
         let playTexto = document.createElement("p");
         playTexto.innerHTML = "▶";
-        playTexto.classList.add("botonPlay","opacidad-off");
+        playTexto.classList.add("botonPlay", "opacidad-off");
         let titulo = document.createElement("td");
         play.appendChild(playTexto);
         titulo.innerHTML = cancion.title;
@@ -172,11 +182,21 @@ function rellenarTabla(canciones) {
         favIcono.classList.add("verde");
         favIcono.id = `cambiarCorazon${cancion.id}`;
         favIcono.classList.add("verde", "fa-regular", "fa-heart");
+        // Añadimos al icono la función de cambiarCorazon
         favIcono.addEventListener("click", cambiarCorazon);
-
+        // Añadimos los elementos hijos a los elementos padre
         favorito.appendChild(favIcono);
-        fila.append(play,titulo,artista,duracion,favorito);
+        fila.append(play, titulo, artista, duracion, favorito);
         tBody.appendChild(fila);
+    });
+
+    // Asignamos la función cambiarAnterior() al botón de "atras"
+    document.getElementById("atras").addEventListener("click", () => {
+        cambiarAnterior(canciones);
+    });
+    // Asignamos la función cambiarSiguiente() al botón de "adelante"
+    document.getElementById("adelante").addEventListener("click", () => {
+        cambiarSiguiente(canciones);
     });
 }
 
@@ -220,8 +240,6 @@ function checkInputs() {
     let titulo = document.getElementById("titulo");
     let autor = document.getElementById("autor");
     let todoOk = true;
-
-    //todoOk = checkTexto(titulo);
 
     if (!checkTexto(titulo)) {
         todoOk = false;
@@ -494,18 +512,17 @@ function cambiarBotones() {
     let playIcono = play.querySelector("i");
     let cancionActiva = document.getElementById("cancionActiva");
 
-    if (cancionActiva.paused) {
-        // Si la canción está pausada, reproducirla
+    if (cancionActiva.paused) {     
         playPrincipal.innerHTML = "PAUSE";
         playIcono.classList.remove("fa-play");
         playIcono.classList.add("fa-pause");
-        cancionActiva.play(); // Reproducir la canción
+        cancionActiva.play(); 
     } else {
-        // Si la canción está en reproducción, pausarla
+        
         playPrincipal.innerHTML = "PLAY";
         playIcono.classList.remove("fa-pause");
         playIcono.classList.add("fa-play");
-        cancionActiva.pause(); // Pausar la canción
+        cancionActiva.pause(); 
     }
 }
 
@@ -657,6 +674,32 @@ function formatoTiempo(segundos) {
     return `${minutos}:${segundosRestantes < 10 ? "0" : ""}${segundosRestantes}`;
 }
 
+/* Función cambiarProgreso()
+*  ¿Qué hace? --> Obtiene el input y obtiene la cancion actual y modifica el currentTime en función del valor por la duración de la canción.
+*                 Si el usuario pulsa en cualquier parte del input range pondrá el momento equivalente de la canción. 
+*  Parámetros --> El input tipo "range" que va a ser modificado(event)
+*/
+document.getElementById("progreso").addEventListener("input", cambiarProgreso);
+function cambiarProgreso(event) {
+    
+    let progresoBarra = event.target;
+    let cancionActiva = document.getElementById("cancionActiva");
+    cancionActiva.currentTime = progresoBarra.value * cancionActiva.duration;
+}
+
+/* Función actualizarBarraProgreso()
+*  ¿Qué hace? --> Obtiene el input y la canción actual y calcula el valor del range en función del tiempo actual de la canción(currentTime)
+*                 y de la duración total de la canción. Una vez calculado "pinta"/"modifica" la barra de progreso mediante el estilo.
+*/
+function actualizarBarraProgreso() {
+    let cancionActiva = document.getElementById("cancionActiva");
+    let progresoBarra = document.getElementById("progreso");
+    let progreso = (cancionActiva.currentTime / cancionActiva.duration) * 100;
+
+    progresoBarra.value = progreso;
+    progresoBarra.style.background = `linear-gradient(to right, #111 ${progreso}%, #777 ${progreso}%)`;
+}
+
 /* -------------------------------------------------- [ FILTRO ] ----------------------------------------------------- */
 
 /* Función mostrarResultadosCanciones()
@@ -712,31 +755,48 @@ function destacarCancionActiva(idFilaActiva) {
     }
 }
 
-
-/* Función cambiarProgreso()
-*  ¿Qué hace? --> Obtiene el input y obtiene la cancion actual y modifica el currentTime en función del valor por la duración de la canción.
-*                 Si el usuario pulsa en cualquier parte del input range pondrá el momento equivalente de la canción. 
-*  Parámetros --> El input tipo "range" que va a ser modificado(event)
+/* Función cambiarAnterior()
+*  ¿Qué hace? --> Cambia la canción actual a la anterior en la lista de canciones. Si está en la primera canción, 
+*                 vuelve a la última. Actualiza el path, titulo, artista y la caratula de la canción.
+*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios
 */
-document.getElementById("progreso").addEventListener("input", cambiarProgreso);
-function cambiarProgreso(event) {
-    
-    let progresoBarra = event.target;
-    let cancionActiva = document.getElementById("cancionActiva");
-    cancionActiva.currentTime = progresoBarra.value * cancionActiva.duration;
+function cambiarAnterior(canciones) {
+    if (indiceActual > 0) {
+        indiceActual--;
+    } else {
+        indiceActual = canciones.length - 1;  
+    }
+
+    let cancion = canciones[indiceActual];
+    let audio = document.getElementById("cancionActiva");
+    audio.src = cancion.filepath; 
+    cambiarBotones(); 
+    destacarCancionActiva(`fila-${cancion.id}`);  
+
+    asignarCover(cancion.cover);
+    asignarNombre(cancion.title, cancion.artist);
 }
 
-/* Función actualizarBarraProgreso()
-*  ¿Qué hace? --> Obtiene el input y la canción actual y calcula el valor del range en función del tiempo actual de la canción(currentTime)
-*                 y de la duración total de la canción. Una vez calculado "pinta"/"modifica" la barra de progreso mediante el estilo.
+/* Función cambiarSiguiente()
+*  ¿Qué hace? --> Cambia la canción actual a la siguiente en la lista de canciones. Si está en la última canción, 
+*                 vuelve a la primera. Actualiza el path, titulo, artista y la caratula de la canción.
+*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios
 */
-function actualizarBarraProgreso() {
-    let cancionActiva = document.getElementById("cancionActiva");
-    let progresoBarra = document.getElementById("progreso");
-    let progreso = (cancionActiva.currentTime / cancionActiva.duration) * 100;
+function cambiarSiguiente(canciones) {
+    if (indiceActual < canciones.length - 1) {
+        indiceActual++;
+    } else {
+        indiceActual = 0;
+    }
 
-    progresoBarra.value = progreso;
-    progresoBarra.style.background = `linear-gradient(to right, #111 ${progreso}%, #777 ${progreso}%)`;
+    let cancion = canciones[indiceActual];
+    let audio = document.getElementById("cancionActiva");
+    audio.src = cancion.filepath;
+    cambiarBotones(); 
+    destacarCancionActiva(`fila-${cancion.id}`); 
+
+    asignarCover(cancion.cover);
+    asignarNombre(cancion.title, cancion.artist);
 }
 
 
@@ -744,7 +804,7 @@ function actualizarBarraProgreso() {
 // PARA CALCULAR EL VALOR DE LA BARRA DE PROGRESO
 //Math.min((tiempoactual / tiempototal)*100);       BORRAR SI NO SE NECESITA
 
-function calcularProgreso(tiempoActual,tiempoTotal) {
-    return Math.min((tiempoActual / tiempoTotal)*100);
- }
+// function calcularProgreso(tiempoActual,tiempoTotal) {
+//     return Math.min((tiempoActual / tiempoTotal)*100);
+//  }
  
