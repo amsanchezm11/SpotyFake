@@ -1,11 +1,21 @@
 /* ---------------------------------------------- [ FETCH ] ------------------------------------------------------------ */
 
-// window.addEventListener("load", async (event) => {
-//     event.preventDefault();
+/* Función mostrarCanciones()
+*  ¿Qué hace? --> Cuando carga la página obtiene todas las canciones de la Base de Datos, crea la tabla
+*                 y la rellena
+*/
+window.addEventListener("load", async (event) => {
+    event.preventDefault();
 
-//     const lista = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
-//     //rellenarTabla(lista);
-// });
+    const lista = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
+    crearTabla();
+    rellenarTabla(lista);
+
+    document.getElementById("buscarCancion").addEventListener("input", (event) => {
+        let filtro = event.target.value.trim();
+        mostrarResultadosCanciones(lista, filtro);
+    });
+});
 
 /* Función obtenerCanciones()
 *  ¿Qué hace? --> Hace una peticion a la bbdd de todos las canciones que hay en ella
@@ -122,7 +132,7 @@ function crearTabla() {
     section.appendChild(tabla);
 }
 
-/* Función crearTabla()
+/* Función rellenarTabla()
 *  ¿Qué hace? --> Mediante DOM por cada cancion que obtiene de la lista crea una fila que contiene
 *                 botón de play, titulo de la canción, nombre del artista y el corazón de favorito
 *  Parámetros --> Lista de canciones obtenida de la Base de Datos
@@ -133,15 +143,19 @@ function rellenarTabla(canciones) {
 
     canciones.forEach(cancion => {
         let fila = document.createElement("tr");
+        fila.id = `fila-${cancion.id}`;
         fila.classList.add("fila-cancion");
         fila.addEventListener("mouseenter", mostrarBoton);
         fila.addEventListener("mouseleave", mostrarBoton);
-        fila.addEventListener("click",()=>{
+        fila.addEventListener("dblclick",()=>{
             let cancionActiva = document.getElementById("cancionActiva");
             cancionActiva.src = `${cancion.filepath}`;
             cancionActiva.play();
             cambiarBotones();
+            destacarCancionActiva(fila.id);          
         });
+        fila.addEventListener("dblclick", () => asignarCover(cancion.cover));
+        fila.addEventListener("dblclick", () => {asignarNombre(cancion.title, cancion.artist)});
         let play = document.createElement("td");
         play.classList.add("td-play");
         let playTexto = document.createElement("p");
@@ -306,8 +320,8 @@ document.getElementById("play").addEventListener("click", pausarCancion);
 document.getElementById("principal-play").addEventListener("click", pausarCancion);
 function pausarCancion() {
     let cancionActiva = document.getElementById("cancionActiva");
-    document.getElementById("play").click();
-    document.getElementById("principal-play").click();
+    //document.getElementById("play").click();
+    //document.getElementById("principal-play").click();
     if (cancionActiva.paused) {
         cancionActiva.play();
     }else{
@@ -643,3 +657,123 @@ function barraProgreso(event) {
     cancionactiva.volume = nivelVolumen.value;
     nivelVolumen.style.background = `linear-gradient(to right, #111 ${nivelVolumen.value*100}%, #777 ${nivelVolumen.value*100}%)`;
 }
+
+
+/* -------------------------------------------------- [ CANCION ] ----------------------------------------------------- */
+
+/* Función barraProgreso()
+*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
+*  Parámetros --> Input asociado al evento(event)
+*/
+function asignarCover(path) {
+    let cover = document.getElementById("imagenCover");
+    cover.src = path;
+}
+
+/* Función barraProgreso()
+*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
+*  Parámetros --> Input asociado al evento(event)
+*/
+function asignarNombre(titulo, autor) {
+    let tituloParrafo = document.getElementById("titulo-parrafo");
+    let autorParrafo = document.getElementById("artista-parrafo");
+
+    tituloParrafo.innerHTML = titulo;
+    autorParrafo.innerHTML = autor;
+}
+
+/* Función atualizarTiempo()
+*  ¿Qué hace? --> Obtiene el la duración de la canción que está activa y a través del evento timeupdate
+*  Parámetros --> Input asociado al evento(event)
+*/
+document.getElementById("cancionActiva").addEventListener("timeupdate", function() {
+   
+    let tiempoActual = cancionActiva.currentTime;
+    let tiempoTexto = document.getElementById("tiempoActual");
+    let tiempoTotalTexto = document.getElementById("tiempoTotal");
+
+    if (!isNaN(cancionActiva.duration) && cancionActiva.duration > 0) {
+        tiempoTotalTexto.innerHTML = formatoTiempo(cancionActiva.duration);
+    }
+
+    if (tiempoTexto) {
+        tiempoTexto.innerHTML = formatoTiempo(tiempoActual);
+    }
+
+});
+
+function formatoTiempo(segundos) {
+    let minutos = Math.floor(segundos / 60);
+    let segundosRestantes = Math.floor(segundos % 60);
+    return `${minutos}:${segundosRestantes < 10 ? "0" : ""}${segundosRestantes}`;
+}
+
+/* -------------------------------------------------- [ FILTRO ] ----------------------------------------------------- */
+
+/* Función mostrarResultadosCanciones()
+*  ¿Qué hace? --> Toma el valor ingresado por el input search por el el usuario, obtiene las 
+*  canciones de la bbdd que coinciden con ese valor, y muestra los resultados.
+*  Parámetros --> El valor que el usuario ha escrito en el formulario(event).
+*/
+function mostrarResultadosCanciones(canciones, filtro = '') {
+    
+    // Filtramos los canciones por el titulo
+    let cancionesFiltradas = canciones.filter(cancion =>
+        cancion.title.toLowerCase().includes(filtro.toLowerCase())
+    );
+
+    if (cancionesFiltradas.length === 0) {
+        contenedorResultados.innerHTML = "<p>No se encontraron canciones.</p>";
+        return;
+    }
+
+    let section = document.getElementById("section");
+    // En caso de que tenga contenido lo limpiamos
+    if (section.hasChildNodes()) {
+        if (section.lastChild.id === "tabla") {
+            section.removeChild(section.lastChild);
+        }else{
+            let formulario = document.getElementById("formulario");
+            formulario.style.display = "none";
+        }
+    }
+
+    crearTabla();
+    rellenarTabla(cancionesFiltradas);
+
+}
+
+
+/* Función mostrarResultadosCanciones()
+*  ¿Qué hace? --> Obtiene todas las filas de la tabla y según el id de la fila que se le pasa por 
+*                 parámetro cambia el fondo de la fila a un tono más claro para descarla
+*  Parámetros --> Id de la fila a destacar(idFilaActiva)
+*/
+function destacarCancionActiva(idFilaActiva) {
+  
+    let filas = document.querySelectorAll(".fila-cancion");
+
+    filas.forEach(fila => {
+        fila.style.backgroundColor = ""; 
+    });
+
+    let filaActiva = document.getElementById(idFilaActiva);
+    if (filaActiva) {
+        filaActiva.style.backgroundColor = "var(--color-cuaternario)"; 
+    }
+}
+
+document.getElementById("progreso").addEventListener("input", barraProgresoCancion);
+function barraProgresoCancion(event) {
+    
+    let nivelVolumen = event.target;
+    console.log(nivelVolumen);
+    let cancionactiva = document.getElementById("cancionActiva");
+    cancionactiva.volume = nivelVolumen.value;
+    nivelVolumen.style.background = `linear-gradient(to right, #111 ${nivelVolumen.value*100}%, #777 ${nivelVolumen.value*100}%)`;
+}
+
+
+
+// PARA CALCULAR EL VALOR DE LA BARRA DE PROGRESO
+Math.min((tiempoactual / tiempototal)*100);

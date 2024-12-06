@@ -8,6 +8,9 @@
     <link rel="icon" type="image/png" href="IMG/logoGreen.png">
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <script type="module" src="JS/script.js" defer></script>
 </head>
 
@@ -16,7 +19,7 @@
         <header>
             <div class="container-logo">
                 <div class="container-buscar">
-                    <input type="search" placeholder="  🔎 Buscar">
+                    <input id="buscarCancion" type="search" placeholder="🔎 Buscar">
                     <h2>Music</h2>
                 </div>
 
@@ -60,13 +63,13 @@
             </ul>
         </div>
         <div class="container-img-aside">
-            <img src="IMG/busTrap.jpg" alt="">
+            <img id="imagenCover" src="IMG/busTrap.jpg" alt="">
         </div>
     </aside>
     <footer>
         <div id="cancionTitulo">
-            <p class="titulo">Lose Yourself</p>
-            <p class="artista">Eminem</p>
+            <p id="titulo-parrafo" class="titulo"></p>
+            <p id="artista-parrafo" class="artista"></p>
         </div>
         <div id="reproductor">
             <div class="container-botones">
@@ -77,9 +80,9 @@
                 <button id="aleatorio"><i class="fa-solid fa-shuffle botonBlanco"></i></button>
             </div>
             <div class="container-progreso">
-                <p>0:00</p>
+                <p id="tiempoActual">0:00</p>
                 <input type="range" name="volumen" id="progreso" class="volumen" min="0" max="1" step="0.01">
-                <p>99:99</p>
+                <p id="tiempoTotal">0:00</p>
             </div>
         </div>
         <div id="volumen">

@@ -11,7 +11,7 @@
 
 /*---------------------------------------------- [GLOBAL] -----------------------------------------------------------*/
 * {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Roboto, sans-serif;
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -98,6 +98,7 @@ tbody tr td:first-child {
     height: 40px;
     font-size: 14px;
     color: var(--color-fuente);
+    border-bottom: 1px solid var(--color-cuaternario);
     transition: background-color 0.2s ease, color 0.4s ease;
 }
 
@@ -236,7 +237,7 @@ tbody tr td:first-child {
     border: none;
     border-radius: 20px;
     display: inline-block;
-    transition: transform 0.3s ease; 
+    transition: transform 0.3s ease;
 }
 
 #formulario button:hover {
@@ -253,7 +254,7 @@ tbody tr td:first-child {
 .avisoV {
     font-weight: bold;
     color: green;
-    font-size:  10px;
+    font-size: 10px;
     margin: 10px 0;
 }
 
@@ -411,6 +412,16 @@ input[type="search"] {
     box-shadow: -2px 2px 0px 0px rgb(255, 255, 255);
 }
 
+#buscarCancion {
+    padding-left: 10px;
+    color: var(--color-boton);
+}
+
+#buscarCancion:focus {
+    outline: 2px solid var(--color-boton);
+   
+}
+
 /* ----------------------------------------------- [FOOTER] -------------------------------------------------------- */
 
 footer {
@@ -427,7 +438,7 @@ footer {
 
 input[type="range"] {
     -webkit-appearance: none;
-    appearance: none;   
+    appearance: none;
     height: 10px;
     border-radius: 15px;
     cursor: pointer;
@@ -532,6 +543,29 @@ input[type="range"]::-webkit-slider-runnable-track {
     width: 800px;
 }
 
+/* --------------------------------------------- [CONTROLES] ------------------------------------------------------ */
+
+
+
+
+#repetir,#atras,#play,#adelante,#aleatorio{
+     display: inline-block;
+    transition: transform 0.3s ease;
+}
+
+#repetir:hover,#atras:hover,#adelante:hover,#aleatorio:hover{
+    transform: scale(1.2);
+}
+
+#play:hover{
+    transform: scale(1.1);
+}
+
+#tiempoActual,#tiempoTotal{
+    width: 37px;
+    text-align: center;
+}
+            
 /* --------------------------------------------- [ANIMACIONES] ------------------------------------------------------ */
 
 @keyframes aparecerFormulario {
