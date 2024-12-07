@@ -73,11 +73,11 @@
         </div>
         <div id="reproductor">
             <div class="container-botones">
-                <button id="repetir"><i class="fa-solid fa-repeat botonBlanco"></i></button>
+                <button id="repetir" name="repetir" data-value="false"><i class="fa-solid fa-repeat botonBlanco"></i></button>
                 <button id="atras"><i class="fa-solid fa-backward"></i></button>
                 <button id="play"><i class="fa-solid fa-play"></i></button>
                 <button id="adelante"><i class="fa-solid fa-forward"></i></button>
-                <button id="aleatorio"><i class="fa-solid fa-shuffle botonBlanco"></i></button>
+                <button id="aleatorio" name="aleatorio" data-value="false"><i class="fa-solid fa-shuffle botonBlanco"></i></button>
             </div>
             <div class="container-progreso">
                 <p id="tiempoActual">0:00</p>
@@ -87,7 +87,7 @@
         </div>
         <div id="volumen">
             <i id="icono-volumen" class="botonBlanco fa-solid fa-volume-low"></i>
-            <input type="range" name="volumen" id="inputVolumen" class="volumen"  min="0" max="1" step="0.01" value="0.50">
+            <input type="range" name="volumen" id="inputVolumen" class="volumen"  min="0" max="1" step="0.01" value="1">
         </div>
         <audio id="cancionActiva" src=""></audio>
     </footer>
