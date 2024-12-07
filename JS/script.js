@@ -8,7 +8,7 @@ let indiceActual = 0;
 
 /* Función mostrarCanciones()
 *  ¿Qué hace? --> Cuando carga la página obtiene todas las canciones de la Base de Datos, crea la tabla
-*                 y la rellena
+*                 y la rellena.
 */
 window.addEventListener("load", async (event) => {
     event.preventDefault();
@@ -21,12 +21,16 @@ window.addEventListener("load", async (event) => {
         let filtro = event.target.value.trim();
         mostrarResultadosCanciones(lista, filtro);
     });
+
+    document.getElementById("favoritas").addEventListener("click", () => {
+        mostrarFavoritos(lista);
+    });
 });
 
 /* Función obtenerCanciones()
-*  ¿Qué hace? --> Hace una peticion a la bbdd de todos las canciones que hay en ella
-*  Parámetros --> Url donde vamos a obtener los datos
-*  Devuelve --> Lista de canciones o lista vacía
+*  ¿Qué hace? --> Hace una peticion a la bbdd de todos las canciones que hay en ella.
+*  Parámetros --> Url donde vamos a obtener los datos.
+*  Devuelve --> Lista de canciones o lista vacía.
 */
 async function obtenerCanciones(url) {
     try {
@@ -55,8 +59,8 @@ async function obtenerCanciones(url) {
 }
 
 /* Función obtenerCanciones()
-*  ¿Qué hace? --> Obtiene los datos del formulario los añade a un formData y lo añade a la Base de Datos
-*  Parámetros --> Botón asociado al evento(event)
+*  ¿Qué hace? --> Obtiene los datos del formulario los añade a un formData y lo añade a la Base de Datos.
+*  Parámetros --> Botón asociado al evento(event).
 */
 document.getElementById("subir").addEventListener("click", subirCancion);
 async function subirCancion(event) {
@@ -66,11 +70,13 @@ async function subirCancion(event) {
 
         const formData = new FormData();
 
+        // Obtenemos los valores del formulario
         let archivo = document.getElementById("archivo").files[0];
         let titulo = document.getElementById("titulo").value;
         let autor = document.getElementById("autor").value;
         let cover = document.getElementById("cover").files[0];
 
+        // Los alacenamos en el formData
         formData.append("music", archivo);
         formData.append("title", titulo);
         formData.append("artist", autor);
@@ -92,7 +98,13 @@ async function subirCancion(event) {
             console.error("Error al subir los datos de la canción:", error);
         }
 
+        // Limpiamos los campos del formulario
+        document.getElementById("archivo").value = "";
+        document.getElementById("titulo").value = "";
+        document.getElementById("autor").value = "";
+        document.getElementById("cover").value = "";
     }
+
 }
 
 /* ---------------------------------------------- [ DOM ] ------------------------------------------------------------ */
@@ -139,8 +151,8 @@ function crearTabla() {
 
 /* Función rellenarTabla()
 *  ¿Qué hace? --> Mediante DOM por cada cancion que obtiene de la lista crea una fila que contiene
-*                 botón de play, titulo de la canción, nombre del artista y el corazón de favorito
-*  Parámetros --> Lista de canciones obtenida de la Base de Datos
+*                 botón de play, titulo de la canción, nombre del artista y el corazón de favorito.
+*  Parámetros --> Lista de canciones obtenida de la Base de Datos.
 */
 function rellenarTabla(canciones) {
     let tBody = document.getElementById("tBody");
@@ -158,7 +170,6 @@ function rellenarTabla(canciones) {
             cambiarBotones();
             destacarCancionActiva(fila.id);
             indiceActual = indice;
-            //console.log(indiceActual);
         });
         fila.addEventListener("dblclick", () => asignarCover(cancion.cover));
         fila.addEventListener("dblclick", () => { asignarNombre(cancion.title, cancion.artist) });
@@ -178,11 +189,16 @@ function rellenarTabla(canciones) {
         obtenerDuracion(cancion.filepath, duracion);
         let favorito = document.createElement("td");
         let favIcono = document.createElement("i");
-        favIcono.classList.add("verde");
         favIcono.id = `cambiarCorazon${cancion.id}`;
-        favIcono.classList.add("verde", "fa-regular", "fa-heart");
-        // Añadimos al icono la función de cambiarCorazon
-        favIcono.addEventListener("click", cambiarCorazon);
+        favIcono.classList.add("verde");
+        favIcono.classList.add("fa-heart");
+        // Hacemos uso del operador ternario para aplicar el icono segun si está o no en localstorage
+        favIcono.classList.add(localStorage.getItem(cancion.id) ? "fa-solid" : "fa-regular");
+        /* Le añadimos la función de cambiar corazón que modifica el icono y agrega o elimina el id
+           de a canción del localstorage*/
+        favIcono.addEventListener("click", (event) => {
+            cambiarCorazon(event, cancion.id);
+        });
         // Añadimos los elementos hijos a los elementos padre
         favorito.appendChild(favIcono);
         fila.append(play, titulo, artista, duracion, favorito);
@@ -203,7 +219,7 @@ function rellenarTabla(canciones) {
     });
 
     /* Función para cuando acabe la canción. Comprueba si el boton de aleatorio está activado y segun el caso
-    *  pasará de forma aleatoria de canción o pasará a la siguiente en caso de que no esté activado
+    *  pasará de forma aleatoria de canción o pasará a la siguiente en caso de que no esté activado.
     */
     document.getElementById("cancionActiva").addEventListener("ended", () => {
         let botonAleatorio = document.getElementById("aleatorio");
@@ -220,9 +236,9 @@ function rellenarTabla(canciones) {
 /* ---------------------------------------------- [ REGEX ] ------------------------------------------------------------ */
 
 /* Función checkArtista()
-*   ¿Qué hace? --> Configura la regex y llama a la función comprobarRegex()
-*   Parámetros --> Valor del input(element)
-*   Devuelve --> True/False
+*   ¿Qué hace? --> Configura la regex y llama a la función comprobarRegex().
+*   Parámetros --> Valor del input(element).
+*   Devuelve --> True/False.
 */
 function checkTexto(element) {
     let regex = /^[A-Za-z0-9 ]{1,20}$/;
@@ -230,9 +246,9 @@ function checkTexto(element) {
     // Texto Admite --> Texto y números con un rango máximo de 20 caracteres(Con espacios)
 }
 /* Función comprobarRegex()
-*   ¿Qué hace? --> Comprueba que el input cumple las condiciones de la regex
-*   Parámetros --> Valor del input(element) y la regex a comprobar(regex)
-*   Devuelve --> True/False
+*   ¿Qué hace? --> Comprueba que el input cumple las condiciones de la regex.
+*   Parámetros --> Valor del input(element) y la regex a comprobar(regex).
+*   Devuelve --> True/False.
 */
 function comprobarRegex(element, regex) {
     // Si cumple la condición del regex el borde del input se pone de color verde, en caso negativo se pone de color rojo
@@ -245,9 +261,9 @@ function comprobarRegex(element, regex) {
     }
 }
 
-/* Función checkInputs()
-*  ¿Qué hace? --> Comprueba que todos los inputs del formulario estén bien
-   Devuelve --> True/False
+/* Función checkInputs().
+*  ¿Qué hace? --> Comprueba que todos los inputs del formulario estén bien.
+   Devuelve --> True/False.
 */
 function checkInputs() {
 
@@ -288,9 +304,9 @@ function checkInputs() {
     return todoOk;
 }
 
-/* Función cambiarClase()
-*  ¿Qué hace? --> Dependiendo de la clase que tenga el elemento le cambia la clase
-*  Parámetros --> El elemento al que se le quiere cambiar la clase(element)
+/* Función cambiarClase().
+*  ¿Qué hace? --> Dependiendo de la clase que tenga el elemento le cambia la clase.
+*  Parámetros --> El elemento al que se le quiere cambiar la clase(element).
 */
 function cambiarClase(elemento) {
     if (elemento.classList.contains("avisoV")) {
@@ -308,9 +324,9 @@ function cambiarClase(elemento) {
 /* Función obtenerDuracion()
 *   ¿Qué hace? --> Crea un elemento audio y le añade el path de la canción introducida por parámetro. Luego 
 *                  al elemento audio le asigna un evento de "loadedmetadata" para obtener la duración exacta
-*                  de la canción. Calcula los minutos y los segundos y se lo pasa a la variable tiempo
+*                  de la canción. Calcula los minutos y los segundos y se lo pasa a la variable tiempo.
 *   Parámetros --> El path de la canción(file) y la variable tiempo que es donde se va a mostrar duración
-*                  de la canción
+*                  de la canción.
 */
 function obtenerDuracion(file, tiempo) {
     let cancion = document.createElement("audio");
@@ -326,8 +342,8 @@ function obtenerDuracion(file, tiempo) {
 }
 
 /* Función cambiarVolumen()
-*   ¿Qué hace? --> Obtiene el valor del input asociado al evento y se lo aplica al volumen del elemento audio
-*   Parámetros --> El input en el que está asociado el evento(event)
+*   ¿Qué hace? --> Obtiene el valor del input asociado al evento y se lo aplica al volumen del elemento audio.
+*   Parámetros --> El input en el que está asociado el evento(event).
 */
 document.getElementById("inputVolumen").addEventListener("input", (event) => {
     let volumenInput = event.target.value;
@@ -335,14 +351,12 @@ document.getElementById("inputVolumen").addEventListener("input", (event) => {
     cancionActiva.volume = volumenInput;
 });
 
-/* Función asignarRepetir(
+/* Función asignarRepetir()
 *   ¿Qué hace? --> Comprueba si el elemento audio tiene el atributo loop y en caso de que lo tenga se lo quita
-*                  y viceversa
+*                  y viceversa.
+*   Parámetros --> El audio al que se le va a aplicar/quitar el atributo loop(audio).
 */
-//document.getElementById("repetir").addEventListener("click", asignarRepetir);
 function asignarRepetir(audio) {
-    //let audio = document.getElementById("cancionActiva");
-
     if (audio.loop) {
         audio.removeAttribute("loop")
     } else {
@@ -354,8 +368,8 @@ function asignarRepetir(audio) {
 
 /* Función cambiarBoton()
 *   ¿Qué hace? --> Comprueba que si el icono tiene la clase "fa-play" o "fa-pause" y dependiendo del valor
-*                  cambia una clase por otra
-*   Parámetros --> El boton en el que está asociado el evento(event)
+*                  cambia una clase por otra.
+*   Parámetros --> El boton en el que está asociado el evento(event).
 */
 // document.getElementById("play").addEventListener("click", (event) => {
 //     let boton = event.currentTarget;
@@ -406,11 +420,10 @@ function asignarRepetir(audio) {
 /* Función cambiarColor()
 *   ¿Qué hace? --> Obtiene los dos iconos y comprueba la clase actual que tienen y cambia las clases 
 *                  según las condiciones("botonBlanco" o "botonVerde").
-*   Parámetros --> El boton en el que está asociado el evento(event)
+*   Parámetros --> El boton en el que está asociado el evento(event).
 */
 document.getElementById("repetir").addEventListener("click", cambiarColor);
 document.getElementById("aleatorio").addEventListener("click", cambiarColor);
-
 function cambiarColor(event) {
     let botonRepetir = document.getElementById("repetir");
     let botonAleatorio = document.getElementById("aleatorio");
@@ -439,10 +452,9 @@ function cambiarColor(event) {
     }
 }
 
-
 /* Función cambiarIcono()
-*   ¿Qué hace? --> Obtiene el valor del volumen(0-100) y dependiendo del valor cambia el icono del volumen
-*   Parámetros --> El boton en el que está asociado el evento(event)
+*   ¿Qué hace? --> Obtiene el valor del volumen(0-100) y dependiendo del valor cambia el icono del volumen.
+*   Parámetros --> El boton en el que está asociado el evento(event).
 */
 document.getElementById("inputVolumen").addEventListener("input", (event) => {
 
@@ -462,8 +474,8 @@ document.getElementById("inputVolumen").addEventListener("input", (event) => {
 });
 
 /* Función cambiarFiltro()
-*   ¿Qué hace? --> Cambia el valor del simbolo para crear un efecto de movimiento
-*   Parámetros --> El boton en el que está asociado el evento(event)
+*   ¿Qué hace? --> Cambia el valor del simbolo para crear un efecto de movimiento.
+*   Parámetros --> El boton en el que está asociado el evento(event).
 */
 document.getElementById("filtros").addEventListener("click", (event) => {
     let boton = event.target;
@@ -475,7 +487,7 @@ document.getElementById("filtros").addEventListener("click", (event) => {
 });
 
 /* Función menuDesplegable()
-*   ¿Qué hace? --> Obtiene los li del documento y alterna la clase ".oculto" cada vez que se activa el evento
+*   ¿Qué hace? --> Obtiene los li del documento y alterna la clase "oculto" cada vez que se activa el evento.
 */
 document.getElementById("filtros").addEventListener("click", () => {
     let listas = document.querySelectorAll("#lista li");
@@ -489,13 +501,13 @@ document.getElementById("filtros").addEventListener("click", () => {
 *  ¿Qué hace? --> Al pulsar el enlace con el evento asociado creará una tabla y la mostrará en el sectión de
 *                 la página web. Primero obtiene todas las canciones y luego crea la tabla y la rellena con
 *                 las canciones.
-*  Parámetros --> Elemento asociado al evento(event)
+*  Parámetros --> Elemento asociado al evento(event).
 */
 document.getElementById("todasCanciones").addEventListener("click", async (event) => {
     event.preventDefault();
     // Obtenemos todas las canciones
     const lista = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
-    //Comprobamos que el section esté vacío
+    // Comprobamos que el section esté vacío
     let section = document.getElementById("section");
     // En caso de que tenga contenido lo limpiamos
     if (section.hasChildNodes()) {
@@ -513,26 +525,30 @@ document.getElementById("todasCanciones").addEventListener("click", async (event
 });
 
 /* Función cambiarCorazon()
-*  ¿Qué hace? --> Al hacer click obtenemos el icono y según el icono que esté previamente 
-*                 lo cambia por el contrario.
-*  Parámetros --> Elemento asociado al evento(event)
+*  ¿Qué hace? --> Al hacer click obtenemos el icono y según el icono que esté previamente lo cambia por el contrario.
+*                 También en caso de que el corazon sea "fa-regular" agrega el id de la canción en localstorage mediante
+*                 la función "guardarFavorito()" y en caso contrario lo elimina con la función "quitarFavorito()".
+*  Parámetros --> Elemento asociado al evento(event).
 */
-function cambiarCorazon(event) {
+function cambiarCorazon(event, id) {
     let icono = event.target;
 
     if (icono.classList.contains("fa-regular")) {
-        icono.classList.remove("fa-regular", "fa-heart")
-        icono.classList.add("fa-solid", "fa-heart");
-    } else {
-        icono.classList.remove("fa-solid", "fa-heart");
-        icono.classList.add("fa-regular", "fa-heart");
+        icono.classList.remove("fa-regular");
+        icono.classList.add("fa-solid");
+        guardarFavorito(id);
+    } else if (icono.classList.contains("fa-solid")) {
+        icono.classList.remove("fa-solid");
+        icono.classList.add("fa-regular");
+        quitarFavorito(id);
     }
 }
+
 
 /* Función mostrarBoton()
 *  ¿Qué hace? --> Al hacer click obtenemos el boton de la fila y según la clase que esté previamente 
 *                 lo cambia por la contraria.
-*  Parámetros --> Elemento asociado al evento(event)
+*  Parámetros --> Elemento asociado al evento(event).
 */
 function mostrarBoton(event) {
     let fila = event.target;
@@ -654,8 +670,8 @@ function cerrarFormulario(event) {
 
 
 /* Función barraProgreso()
-*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso
-*  Parámetros --> Input asociado al evento(event)
+*  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso.
+*  Parámetros --> Input asociado al evento(event).
 */
 document.getElementById("inputVolumen").addEventListener("input", barraProgresoVolumen);
 function barraProgresoVolumen(event) {
@@ -671,8 +687,8 @@ function barraProgresoVolumen(event) {
 /* -------------------------------------------------- [ CANCION ] ----------------------------------------------------- */
 
 /* Función asignarCover()
-*  ¿Qué hace? --> Obtiene el elemento donde va a ir la imagen de la portada y le asigna el src(path) obtenido del parámetro
-*  Parámetros --> El path de la imagen de la canción actual
+*  ¿Qué hace? --> Obtiene el elemento donde va a ir la imagen de la portada y le asigna el src(path) obtenido del parámetro.
+*  Parámetros --> El path de la imagen de la canción actual.
 */
 function asignarCover(path) {
     let cover = document.getElementById("imagenCover");
@@ -680,8 +696,8 @@ function asignarCover(path) {
 }
 
 /* Función asignarNombre()
-*  ¿Qué hace? --> Obtiene los elementos donde va a ir el titulo y el autor y le asigna los valores obtenido de los parámetros
-*  Parámetros --> El titulo y autor de la canción actual
+*  ¿Qué hace? --> Obtiene los elementos donde va a ir el titulo y el autor y le asigna los valores obtenido de los parámetros.
+*  Parámetros --> El titulo y autor de la canción actual.
 */
 function asignarNombre(titulo, autor) {
     let tituloParrafo = document.getElementById("titulo-parrafo");
@@ -692,8 +708,8 @@ function asignarNombre(titulo, autor) {
 }
 
 /* Función atualizarTiempo()
-*  ¿Qué hace? --> Obtiene el la duración de la canción que está activa y a través del evento timeupdate. También llama a la función
-*                 actualizarBarraProgreso() que actualiza la barra de progreso de la canción.
+*  ¿Qué hace? --> Obtiene el la duración de la canción que está activa y a través del evento timeupdate. 
+*                 También llama a la función actualizarBarraProgreso() que actualiza la barra de progreso de la canción.
 *  Parámetros --> Input asociado al evento(event)
 */
 document.getElementById("cancionActiva").addEventListener("timeupdate", function () {
@@ -715,9 +731,9 @@ document.getElementById("cancionActiva").addEventListener("timeupdate", function
 });
 
 /* Función formatoTiempo()
-*  ¿Qué hace? --> Obtiene la tiempo actual de la canción que está activa en segundos y los transforma en minutos y segundos
-*  Parámetros --> Los segundos totales que dura la canción actual
-*  ¿Qé devuelve? --> Devuelve los minutos y segundos por donde va la canción en "formato tiempo" 00:00
+*  ¿Qué hace? --> Obtiene la tiempo actual de la canción que está activa en segundos y los transforma en minutos y segundos.
+*  Parámetros --> Los segundos totales que dura la canción actual.
+*  ¿Qé devuelve? --> Devuelve los minutos y segundos por donde va la canción en "formato tiempo" 00:00.
 */
 function formatoTiempo(segundos) {
     let minutos = Math.floor(segundos / 60);
@@ -726,9 +742,10 @@ function formatoTiempo(segundos) {
 }
 
 /* Función cambiarProgreso()
-*  ¿Qué hace? --> Obtiene el input y obtiene la cancion actual y modifica el currentTime en función del valor por la duración de la canción.
-*                 Si el usuario pulsa en cualquier parte del input range pondrá el momento equivalente de la canción. 
-*  Parámetros --> El input tipo "range" que va a ser modificado(event)
+*  ¿Qué hace? --> Obtiene el input y obtiene la cancion actual y modifica el currentTime en función del valor 
+*                 por la duración de la canción. Si el usuario pulsa en cualquier parte del input range pondrá 
+*                 el momento equivalente de la canción. 
+*  Parámetros --> El input tipo "range" que va a ser modificado(event).
 */
 document.getElementById("progreso").addEventListener("input", cambiarProgreso);
 function cambiarProgreso(event) {
@@ -740,7 +757,7 @@ function cambiarProgreso(event) {
 
 /* Función actualizarBarraProgreso()
 *  ¿Qué hace? --> Obtiene el input y la canción actual y calcula el valor del range en función del tiempo actual 
-*                 de la canción(currentTime) y de la duración total de la canción. Una vez calculado 
+*                 de la canción(currentTime) y de la duración total de la canción. Una vez calculado.
 *                 "pinta"/"modifica" la barra de progreso mediante el estilo.
 */
 function actualizarBarraProgreso() {
@@ -754,8 +771,8 @@ function actualizarBarraProgreso() {
 
 /* Función destacarCancionActiva()
 *  ¿Qué hace? --> Obtiene todas las filas de la tabla y según el id de la fila que se le pasa por 
-*                 parámetro cambia el fondo de la fila a un tono más claro para descarla
-*  Parámetros --> Id de la fila a destacar(idFilaActiva)
+*                 parámetro cambia el fondo de la fila a un tono más claro para descarla.
+*  Parámetros --> Id de la fila a destacar(idFilaActiva).
 */
 function destacarCancionActiva(idFilaActiva) {
 
@@ -774,7 +791,7 @@ function destacarCancionActiva(idFilaActiva) {
 /* Función cambiarAnterior()
 *  ¿Qué hace? --> Cambia la canción actual a la anterior en la lista de canciones. Si está en la primera canción, 
 *                 vuelve a la última. Actualiza el path, titulo, artista y la caratula de la canción.
-*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios
+*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
 function cambiarAnterior(canciones) {
     if (indiceActual > 0) {
@@ -791,7 +808,7 @@ function cambiarAnterior(canciones) {
 /* Función cambiarSiguiente()
 *  ¿Qué hace? --> Cambia la canción actual a la siguiente en la lista de canciones. Si está en la última canción, 
 *                 vuelve a la primera. Actualiza el path, titulo, artista y la caratula de la canción.
-*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios
+*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
 function cambiarSiguiente(canciones) {
     if (indiceActual < canciones.length - 1) {
@@ -808,7 +825,7 @@ function cambiarSiguiente(canciones) {
 /* Función cambiarAleatoria()
 *  ¿Qué hace? --> Cambia la canción actual a la siguiente de forma aleatoria. Crea un número aleatorio dentro
 *                 de la longitud de la lista.
-*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios
+*  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
 function cambiarAleatoria(canciones) {
     let indice;
@@ -827,7 +844,7 @@ function cambiarAleatoria(canciones) {
 *  ¿Qué hace? --> Obtiene el audio y le cambia el src por el path de la cancion pasada por parametro. También
 *                 cambia los botones de play, la fila destacada, la portada, el titulo de la canción y el
 *                 nombre del artista a través de las funciones correspondiente.
-*  Parámetros --> La canción que se ha pulsado para reproducir
+*  Parámetros --> La canción que se ha pulsado para reproducir.
 */
 function actualizarCancion(cancion) {
     let audio = document.getElementById("cancionActiva");
@@ -841,9 +858,9 @@ function actualizarCancion(cancion) {
 /* Función cambiarAleatorioBucle()
 *  ¿Qué hace? --> Alterna los modos "repetir" y "aleatorio" al hacer clic en los botones correspondientes. En caso de que
 *                 un botón haya sido pulsado cambia el contrario.
-*  Parámetros --> El botón que ha sido presionado(element) y ha activado el evento
+*  Parámetros --> El botón que ha sido presionado(element) y ha activado el evento.
 *  Anotación -->  Lo de "data-value" lo he sacado de la página "https://www.w3schools.com/tags/att_data-.asp" para poder
-*                 avireguar como ponerle valor a un elemento que no es un input
+*                 avireguar como ponerle valor a un elemento que no es un input.
 */
 document.getElementById("aleatorio").addEventListener("click", cambiarAleatorioBucle);
 document.getElementById("repetir").addEventListener("click", cambiarAleatorioBucle);
@@ -867,7 +884,7 @@ function cambiarAleatorioBucle(element) {
         botonPulsado.setAttribute("data-value", "true");
         otroBoton.setAttribute("data-value", "false");
     }
-    
+
     //console.log(`Cambiar valor boton ${botonPulsado.name}`, botonPulsadoValor);
     //console.log(`Cambiar valor boton ${otroBoton.name}`, otroBotonValor);
 }
@@ -907,4 +924,62 @@ function mostrarResultadosCanciones(canciones, filtro = '') {
 
 }
 
+/* ----------------------------------------------- [ LOCAL-STORAGE ] -------------------------------------------------- */
 
+/* Función guardarFavorito()
+*  ¿Qué hace? --> Agrega en el localstorage el id de la canción tanto como clave como valor.
+*  Parámetros --> El id de la cancion que vamos a almacenar en localstorage.
+*/
+function guardarFavorito(id) {
+    localStorage.setItem(`${id}`, id);
+}
+
+/* Función quitarFavorito()
+*  ¿Qué hace? --> Borra del localstorage el id pasado por parámetro.
+*  Parámetros --> El id de la cancion que vamos a eliminar en localstorage.
+*/
+function quitarFavorito(id) {
+    localStorage.removeItem(id);
+}
+
+/* --------------------------------------------- [ FILTRO-FAVORITOS ] ------------------------------------------------- */
+
+/* Función mostrarFavoritos()
+*  ¿Qué hace? --> Rellena la primera lista "cancionesFav" con los ids almacenados en localstorage, después intera
+*                 sobre la lista de canciones(la de la BBDD) y almacena las canciones que tenga el mismo id que los
+*                 que están almacenados en localstorage dentro de la lista favoritasMostrar. Luego, limpia el section
+*                 previamente y crea la tabla y la rellena.
+*  Parámetros --> Lista de canciones almacenadas en la Base de datos.
+*  Anotación --> Se usan dos arrays auxiliares "cancionesFav" y "favoritasMostrar". La primera almacena los ids del
+*                localstorage y la segunda las canciones que se van a mostrar como favoritas.
+*/
+function mostrarFavoritos(canciones) {
+    let cancionesFav = [];
+    let favoritasMostrar = [];
+    for (let i = 0; i < localStorage.length; i++) {
+        let key = localStorage.key(i);
+        let valor = JSON.parse(localStorage.getItem(key));
+        cancionesFav.push(valor);
+    }
+
+    canciones.forEach(cancion => {
+        if (cancionesFav.includes(cancion.id)) {
+            favoritasMostrar.push(cancion);
+        }
+    });
+
+    let section = document.getElementById("section");
+    // En caso de que tenga contenido lo limpiamos
+    if (section.hasChildNodes()) {
+        if (section.lastChild.id === "tabla") {
+            section.removeChild(section.lastChild);
+        } else {
+            let formulario = document.getElementById("formulario");
+            formulario.style.display = "none";
+        }
+    }
+    // Creamos la tabla
+    crearTabla();
+    // Rellenamos la tabla con las canciones existentes
+    rellenarTabla(favoritasMostrar);
+}
