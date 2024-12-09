@@ -1,9 +1,11 @@
 /* ---------------------------------------------- [ GLOBAL ] ------------------------------------------------------------ */
 
-/*  Para poder tomar el valor del índice de la canción actual correctamente y así poder pasar de canción tanto
-*   a la anterior como a la siguiente o aleatoria. 
+/*  [indiceActual] --> Para poder tomar el valor del índice de la canción actual correctamente y así poder 
+*                      pasar de canción tanto a la anterior como a la siguiente o aleatoria.
+*   [canciones] -->    Para poder hacer el filtro con buscar y con favoritas 
 */
 let indiceActual = 0;
+let canciones = [];
 /* ---------------------------------------------- [ FETCH ] ------------------------------------------------------------ */
 
 /* Función mostrarCanciones()
@@ -13,18 +15,29 @@ let indiceActual = 0;
 window.addEventListener("load", async (event) => {
     event.preventDefault();
 
-    const lista = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
+    canciones = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
     crearTabla();
-    rellenarTabla(lista);
+    rellenarTabla(canciones);
+});
 
-    document.getElementById("buscarCancion").addEventListener("input", (event) => {
-        let filtro = event.target.value.trim();
-        mostrarResultadosCanciones(lista, filtro);
-    });
+/* Función buscarCancionFiltro()
+*  ¿Qué hace? --> Toma el valor ingresado por el input search por el el usuario, obtiene las 
+*                 canciones de la bbdd que coinciden con ese valor y muestra los resultados.
+*  Parámetros --> El valor que el usuario ha escrito en el formulario(event).
+*/
+document.getElementById("buscarCancion").addEventListener("input", (event) => {
+    let filtro = event.target.value.trim();
+    mostrarResultadosCanciones(canciones, filtro);
+    let cancionesFiltradas = canciones.filter((cancion) =>
+        cancion.title.toLowerCase().includes(filtro.toLowerCase())
+    );
 
-    document.getElementById("favoritas").addEventListener("click", () => {
-        mostrarFavoritos(lista);
-    });
+    canciones = cancionesFiltradas;
+});
+
+// Llamada a la función mostrarFavoritos()
+document.getElementById("favoritas").addEventListener("click", () => {
+    canciones = mostrarFavoritos(canciones);
 });
 
 /* Función obtenerCanciones()
@@ -98,7 +111,7 @@ async function subirCancion(event) {
             console.error("Error al subir los datos de la canción:", error);
         }
 
-        // Limpiamos los campos del formulario junto con los avisos
+        // Limpiamos los campos del formulario con la funcion limpiarFormulario()
         limpiarFormulario();
     }
 
@@ -192,7 +205,7 @@ function rellenarTabla(canciones) {
         // Hacemos uso del operador ternario para aplicar el icono segun si está o no en localstorage
         favIcono.classList.add(localStorage.getItem(cancion.id) ? "fa-solid" : "fa-regular");
         /* Le añadimos la función de cambiar corazón que modifica el icono y agrega o elimina el id
-           de a canción del localstorage*/
+           de a canción del localstorage */
         favIcono.addEventListener("click", (event) => {
             cambiarCorazon(event, cancion.id);
         });
@@ -202,32 +215,6 @@ function rellenarTabla(canciones) {
         tBody.appendChild(fila);
     });
 
-    // Asignamos la función cambiarAnterior() al botón de "atras"
-    document.getElementById("atras").addEventListener("click", () => {
-        cambiarAnterior(canciones);
-    });
-    // Asignamos la función cambiarSiguiente() al botón de "adelante"
-    document.getElementById("adelante").addEventListener("click", () => {
-        cambiarSiguiente(canciones);
-    });
-    // Asignamos la función cambiarAleatoria() al botón de "aleatorio"
-    document.getElementById("aleatorio").addEventListener("click", () => {
-        cambiarAleatoria(canciones);
-    });
-
-    /* Función para cuando acabe la canción. Comprueba si el boton de aleatorio está activado y segun el caso
-    *  pasará de forma aleatoria de canción o pasará a la siguiente en caso de que no esté activado.
-    */
-    document.getElementById("cancionActiva").addEventListener("ended", () => {
-        let botonAleatorio = document.getElementById("aleatorio");
-        let aleatorioValor = botonAleatorio.getAttribute("data-value");
-        if (aleatorioValor === "true") {
-            cambiarAleatoria(canciones);
-        } else {
-            cambiarSiguiente(canciones);
-        }
-
-    });
 }
 
 /* ---------------------------------------------- [ REGEX ] ------------------------------------------------------------ */
@@ -271,6 +258,7 @@ function checkInputs() {
     let autor = document.getElementById("autor");
     let todoOk = true;
 
+    // Comprobamos si titulo está ok
     if (!checkTexto(titulo)) {
         todoOk = false;
         cambiarClase(avisoTitulo);
@@ -279,7 +267,7 @@ function checkInputs() {
         cambiarClase(avisoTitulo);
         avisoTitulo.innerHTML = "";
     }
-
+    // Si titulo está ok comprobamos el autor
     if (todoOk) {
         if (!checkTexto(autor)) {
             todoOk = false;
@@ -290,14 +278,13 @@ function checkInputs() {
             avisoAutor.innerHTML = "";
         }
     }
-
+    // Si ambos están bien pasamos el mensaje de todo correcto
     if (todoOk) {
         cambiarClase(avisoCancion);
         avisoCancion.innerHTML = "Canción añadida correctamente.";
     } else {
         avisoCancion.innerHTML = "";
     }
-
     return todoOk;
 }
 
@@ -313,7 +300,6 @@ function cambiarClase(elemento) {
         elemento.classList.remove("avisoR");
         elemento.classList.add("avisoV");
     }
-
 }
 
 /* -------------------------------------------------- [ AUDIO ] ----------------------------------------------------- */
@@ -362,57 +348,6 @@ function asignarRepetir(audio) {
 }
 
 /* -------------------------------------------------- [ BOTONES ] ----------------------------------------------------- */
-
-/* Función cambiarBoton()
-*   ¿Qué hace? --> Comprueba que si el icono tiene la clase "fa-play" o "fa-pause" y dependiendo del valor
-*                  cambia una clase por otra.
-*   Parámetros --> El boton en el que está asociado el evento(event).
-*/
-// document.getElementById("play").addEventListener("click", (event) => {
-//     let boton = event.currentTarget;
-//     let icono = boton.querySelector("i");
-//     cambiarPlayPrincipal();
-
-//     if (icono.classList.contains("fa-play")) {
-//         icono.classList.remove("fa-play");
-//         icono.classList.add("fa-pause");
-//     } else {
-//         icono.classList.remove("fa-pause");
-//         icono.classList.add("fa-play");
-//     }
-// });
-
-/* Función cambiarNombreIcono()
-*   ¿Qué hace? --> Obtiene el elemento asociado al evento y según su contenido lo modifica
-*   Parámetros --> El boton en el que está asociado el evento(event)
-*/
-// document.getElementById("principal-play").addEventListener("click", (event)=>{
-//     let boton = event.target;
-//     cambiarPlay();
-//     if (boton.innerHTML === "PAUSE") {
-//         boton.innerHTML = "PLAY";
-//     }else{
-//         boton.innerHTML = "PAUSE";
-//     }
-// });
-
-/* Función cambiarColor()
-*   ¿Qué hace? --> Comprueba que si el icono tiene la clase "botonBlanco" o "botonVerde" y dependiendo del valor
-*                  cambia una clase por otra
-*   Parámetros --> El boton en el que está asociado el evento(event)
-*/
-// function cambiarColor(event) {
-//     let boton = event.currentTarget;
-//     let icono = boton.querySelector("i");
-
-//     if (icono.classList.contains("botonBlanco")) {
-//         icono.classList.remove("botonBlanco");
-//         icono.classList.add("botonVerde");
-//     } else {
-//         icono.classList.remove("botonVerde");
-//         icono.classList.add("botonBlanco");
-//     }
-// }
 
 /* Función cambiarColor()
 *   ¿Qué hace? --> Obtiene los dos iconos y comprueba la clase actual que tienen y cambia las clases 
@@ -494,6 +429,16 @@ document.getElementById("filtros").addEventListener("click", () => {
     });
 });
 
+/* Función mostrarFiltros()
+*  ¿Qué hace? --> Obtiene los li del documento y alterna la clase "mostrar" cada vez que se activa el evento.
+*/
+document.getElementById("filtros").addEventListener("click", () => {
+    let listaItems = document.querySelectorAll('#lista li');
+    listaItems.forEach(item => {
+        item.classList.toggle("mostrar");
+    });
+});
+
 /* Función mostrarTodasLasCanciones()
 *  ¿Qué hace? --> Al pulsar el enlace con el evento asociado creará una tabla y la mostrará en el sectión de
 *                 la página web. Primero obtiene todas las canciones y luego crea la tabla y la rellena con
@@ -503,10 +448,10 @@ document.getElementById("filtros").addEventListener("click", () => {
 document.getElementById("todasCanciones").addEventListener("click", async (event) => {
     event.preventDefault();
     // Obtenemos todas las canciones
-    const lista = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
+    canciones = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
     // Comprobamos que el section esté vacío
     let section = document.getElementById("section");
-    // En caso de que tenga contenido lo limpiamos
+    // En caso de que el section tenga contenido lo limpiamos
     if (section.hasChildNodes()) {
         if (section.lastChild.id === "tabla") {
             section.removeChild(section.lastChild);
@@ -518,7 +463,7 @@ document.getElementById("todasCanciones").addEventListener("click", async (event
     // Creamos la tabla
     crearTabla();
     // Rellenamos la tabla con las canciones existentes
-    rellenarTabla(lista);
+    rellenarTabla(canciones);
 });
 
 /* Función cambiarCorazon()
@@ -540,7 +485,6 @@ function cambiarCorazon(event, id) {
         quitarFavorito(id);
     }
 }
-
 
 /* Función mostrarBoton()
 *  ¿Qué hace? --> Al hacer click obtenemos el boton de la fila y según la clase que esté previamente 
@@ -576,34 +520,33 @@ function cambiarBotones() {
     let playIcono = play.querySelector("i");
     let cancionActiva = document.getElementById("cancionActiva");
 
-    if (cancionActiva.paused) {
-        playPrincipal.innerHTML = "PAUSE";
-        playIcono.classList.remove("fa-play");
-        playIcono.classList.add("fa-pause");
-        cancionActiva.play();
-    } else {
-        playPrincipal.innerHTML = "PLAY";
-        playIcono.classList.remove("fa-pause");
-        playIcono.classList.add("fa-play");
-        cancionActiva.pause();
-    }
+    if (cancionActiva.hasAttribute("src")) {
+        
+        if (cancionActiva.paused) {
+            playPrincipal.innerHTML = "PAUSE";
+            playIcono.classList.remove("fa-play");
+            playIcono.classList.add("fa-pause");
+            cancionActiva.play();
+        } else {
+            playPrincipal.innerHTML = "PLAY";
+            playIcono.classList.remove("fa-pause");
+            playIcono.classList.add("fa-play");
+            cancionActiva.pause();
+        }
+    }  
 }
 
 /* -------------------------------------------------- [ FORMULARIO ] ------------------------------------------------ */
 
+/* Función cerrarFormulario()
+*  ¿Qué hace? --> Comprueba si el elemento section tiene un elemento hijo con id distinto a "formulario" si lo tiene 
+                  lo elimina. Si el formulario existe lo muestra cambiando el display.
+*/
 document.getElementById("agregarCancion").addEventListener("click", cerrarFormulario);
 document.getElementById("salir").addEventListener("click", cerrarFormulario);
-function cerrarFormulario(event) {
-    
-    let section = document.getElementById("section");
+function cerrarFormulario() {
+
     let formulario = document.getElementById("formulario");
-
-    if (section.hasChildNodes()) {
-        if (!section.lastChild.id === "formulario") {
-            section.removeChild(section.lastChild);
-        }
-
-    }
 
     if (formulario) {
         if (formulario.style.display === "none") {
@@ -612,6 +555,7 @@ function cerrarFormulario(event) {
             formulario.style.display = "none";
         }
     }
+    // Limpiamos los campos del formulario con la funcion limpiarFormulario()
     limpiarFormulario();
 }
 
@@ -632,16 +576,15 @@ function barraProgresoVolumen(event) {
 *  ¿Qué hace? --> Obtiene todos los inputs y todos los avisos y los limpia.
 */
 function limpiarFormulario() {
-       // Limpiamos los campos del formulario junto con los avisos
-       document.getElementById("archivo").value = "";
-       document.getElementById("titulo").value = "";
-       document.getElementById("autor").value = "";
-       document.getElementById("cover").value = "";
-       document.getElementById("aviso-cancion").innerHTML = "";
-       document.getElementById("aviso-titulo").innerHTML = "";
-       document.getElementById("aviso-autor").innerHTML = "";
+    // Limpiamos los campos del formulario junto con los avisos
+    document.getElementById("archivo").value = "";
+    document.getElementById("titulo").value = "";
+    document.getElementById("autor").value = "";
+    document.getElementById("cover").value = "";
+    document.getElementById("aviso-cancion").innerHTML = "";
+    document.getElementById("aviso-titulo").innerHTML = "";
+    document.getElementById("aviso-autor").innerHTML = "";
 }
-
 
 /* -------------------------------------------------- [ CANCION ] ----------------------------------------------------- */
 
@@ -759,6 +702,9 @@ function destacarCancionActiva(idFilaActiva) {
 *                 vuelve a la última. Actualiza el path, titulo, artista y la caratula de la canción.
 *  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
+document.getElementById("atras").addEventListener("click", () => {
+    cambiarAnterior(canciones);
+});
 function cambiarAnterior(canciones) {
     if (indiceActual > 0) {
         indiceActual--;
@@ -776,6 +722,10 @@ function cambiarAnterior(canciones) {
 *                 vuelve a la primera. Actualiza el path, titulo, artista y la caratula de la canción.
 *  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
+document.getElementById("adelante").addEventListener("click", () => {
+    //debugger
+    cambiarSiguiente(canciones);
+});
 function cambiarSiguiente(canciones) {
     if (indiceActual < canciones.length - 1) {
         indiceActual++;
@@ -793,6 +743,9 @@ function cambiarSiguiente(canciones) {
 *                 de la longitud de la lista.
 *  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
+document.getElementById("aleatorio").addEventListener("click", () => {
+    cambiarAleatoria(canciones);
+});
 function cambiarAleatoria(canciones) {
     let indice;
 
@@ -819,7 +772,6 @@ function actualizarCancion(cancion) {
     asignarCover(cancion.cover);
     asignarNombre(cancion.title, cancion.artist);
     cambiarBotones();
-
 }
 
 /* Función cambiarAleatorioBucle()
@@ -849,8 +801,21 @@ function cambiarAleatorioBucle(element) {
         botonPulsado.setAttribute("data-value", "true");
         otroBoton.setAttribute("data-value", "false");
     }
-
 }
+
+/*  Función cambiarAleatoriaSiguiente() 
+*   ¿Qué hace? --> Función para cuando acabe la canción. Comprueba si el boton de aleatorio está activado y segun 
+*                  el caso pasará de forma aleatoria de canción o pasará a la siguiente en caso de que no esté activado.
+*/
+document.getElementById("cancionActiva").addEventListener("ended", () => {
+    let botonAleatorio = document.getElementById("aleatorio");
+    let aleatorioValor = botonAleatorio.getAttribute("data-value");
+    if (aleatorioValor === "true") {
+        cambiarAleatoria(canciones);
+    } else {
+        cambiarSiguiente(canciones);
+    }
+});
 
 /* -------------------------------------------------- [ FILTRO ] ----------------------------------------------------- */
 
@@ -860,7 +825,6 @@ function cambiarAleatorioBucle(element) {
 *  Parámetros --> El valor que el usuario ha escrito en el formulario(event).
 */
 function mostrarResultadosCanciones(canciones, filtro = '') {
-
     // Filtramos los canciones por el titulo
     let cancionesFiltradas = canciones.filter(cancion =>
         cancion.title.toLowerCase().includes(filtro.toLowerCase())
@@ -872,7 +836,7 @@ function mostrarResultadosCanciones(canciones, filtro = '') {
     }
 
     let section = document.getElementById("section");
-    // En caso de que tenga contenido lo limpiamos
+    // En caso de que el section tenga contenido lo limpiamos
     if (section.hasChildNodes()) {
         if (section.lastChild.id === "tabla") {
             section.removeChild(section.lastChild);
@@ -883,8 +847,7 @@ function mostrarResultadosCanciones(canciones, filtro = '') {
     }
 
     crearTabla();
-    rellenarTabla(cancionesFiltradas);
-
+    rellenarTabla(canciones);
 }
 
 /* ----------------------------------------------- [ LOCAL-STORAGE ] -------------------------------------------------- */
@@ -919,12 +882,13 @@ function quitarFavorito(id) {
 function mostrarFavoritos(canciones) {
     let cancionesFav = [];
     let favoritasMostrar = [];
+    // Rellenamos cancionesFav con los ids del localstorage
     for (let i = 0; i < localStorage.length; i++) {
         let key = localStorage.key(i);
         let valor = JSON.parse(localStorage.getItem(key));
         cancionesFav.push(valor);
     }
-
+    // Rellenamos favoritasMostrar con las canciones que cumplen la condición
     canciones.forEach(cancion => {
         if (cancionesFav.includes(cancion.id)) {
             favoritasMostrar.push(cancion);
@@ -932,7 +896,7 @@ function mostrarFavoritos(canciones) {
     });
 
     let section = document.getElementById("section");
-    // En caso de que tenga contenido lo limpiamos
+    // En caso de que el section tenga contenido lo limpiamos
     if (section.hasChildNodes()) {
         if (section.lastChild.id === "tabla") {
             section.removeChild(section.lastChild);
@@ -940,9 +904,10 @@ function mostrarFavoritos(canciones) {
             let formulario = document.getElementById("formulario");
             formulario.style.display = "none";
         }
-    }
+    }  
     // Creamos la tabla
     crearTabla();
     // Rellenamos la tabla con las canciones existentes
     rellenarTabla(favoritasMostrar);
+    return favoritasMostrar;
 }
