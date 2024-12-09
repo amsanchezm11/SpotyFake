@@ -99,13 +99,7 @@ async function subirCancion(event) {
         }
 
         // Limpiamos los campos del formulario junto con los avisos
-        document.getElementById("archivo").value = "";
-        document.getElementById("titulo").value = "";
-        document.getElementById("autor").value = "";
-        document.getElementById("cover").value = "";
-        document.getElementById("aviso-cancion").innerHTML = "";
-        document.getElementById("aviso-titulo").innerHTML = "";;
-        document.getElementById("aviso-autor").innerHTML = "";;
+        limpiarFormulario();
     }
 
 }
@@ -599,10 +593,8 @@ function cambiarBotones() {
 
 document.getElementById("agregarCancion").addEventListener("click", cerrarFormulario);
 document.getElementById("salir").addEventListener("click", cerrarFormulario);
-// document.getElementById("agregarCancion").addEventListener("click", abrirFormulario);
-// document.getElementById("salir").addEventListener("click", abrirFormulario);
 function cerrarFormulario(event) {
-    //event.stopPropagation();
+    
     let section = document.getElementById("section");
     let formulario = document.getElementById("formulario");
 
@@ -620,7 +612,7 @@ function cerrarFormulario(event) {
             formulario.style.display = "none";
         }
     }
-
+    limpiarFormulario();
 }
 
 /* Función barraProgreso()
@@ -634,6 +626,20 @@ function barraProgresoVolumen(event) {
     let cancionactiva = document.getElementById("cancionActiva");
     cancionactiva.volume = nivelVolumen.value;
     nivelVolumen.style.background = `linear-gradient(to right, black ${nivelVolumen.value * 100}%, grey ${nivelVolumen.value * 100}%)`;
+}
+
+/* Función limpiarFormulario()
+*  ¿Qué hace? --> Obtiene todos los inputs y todos los avisos y los limpia.
+*/
+function limpiarFormulario() {
+       // Limpiamos los campos del formulario junto con los avisos
+       document.getElementById("archivo").value = "";
+       document.getElementById("titulo").value = "";
+       document.getElementById("autor").value = "";
+       document.getElementById("cover").value = "";
+       document.getElementById("aviso-cancion").innerHTML = "";
+       document.getElementById("aviso-titulo").innerHTML = "";
+       document.getElementById("aviso-autor").innerHTML = "";
 }
 
 
