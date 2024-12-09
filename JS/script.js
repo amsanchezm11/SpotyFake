@@ -98,11 +98,14 @@ async function subirCancion(event) {
             console.error("Error al subir los datos de la canción:", error);
         }
 
-        // Limpiamos los campos del formulario
+        // Limpiamos los campos del formulario junto con los avisos
         document.getElementById("archivo").value = "";
         document.getElementById("titulo").value = "";
         document.getElementById("autor").value = "";
         document.getElementById("cover").value = "";
+        document.getElementById("aviso-cancion").innerHTML = "";
+        document.getElementById("aviso-titulo").innerHTML = "";;
+        document.getElementById("aviso-autor").innerHTML = "";;
     }
 
 }
@@ -585,7 +588,6 @@ function cambiarBotones() {
         playIcono.classList.add("fa-pause");
         cancionActiva.play();
     } else {
-
         playPrincipal.innerHTML = "PLAY";
         playIcono.classList.remove("fa-pause");
         playIcono.classList.add("fa-play");
@@ -621,54 +623,6 @@ function cerrarFormulario(event) {
 
 }
 
-
-// document.addEventListener("click", (event)=>{
-//     event.stopPropagation();
-//     let formulario = document.getElementById("formulario");
-//     let botonAgregar = document.getElementById("agregarCancion");
-//     let botonCerrar = document.getElementById("salir")
-
-//     if (!formulario.contains(event.target) && !botonCerrar.contains(event.target) && !botonAgregar.contains(event.target)) {
-//        cerrarFormulario();
-//     }else{
-//         cerrarFormulario();
-//     }
-
-// });
-
-
-// function abrirFormulario(event) {
-//     event.stopPropagation();
-//     let section = document.getElementById("section");
-//     let formulario = document.getElementById("formulario");
-
-//    
-//     // if (formulario.style.display !== "flex") {
-//     //     formulario.style.display = "flex"; 
-//     // }
-
-//     if (formulario && formulario.style.display !== "flex") {
-//         formulario.style.display = "flex";
-//     }
-
-// }
-
-// function cerrarFormulario() {
-//     let section = document.getElementById("section");
-//     let formulario = document.getElementById("formulario");
-
-//     if (formulario && formulario.style.display !== "none") {
-//         formulario.style.display = "none";
-//     }
-
-//     if (formulario && section.hasChildNodes()) {
-//         if (section.lastChild.id === "formulario") {
-//             section.removeChild(formulario);
-//         }
-//     }
-// }
-
-
 /* Función barraProgreso()
 *  ¿Qué hace? --> Obtiene el input de tipo range y según el valor que tenga pinta la barra de progreso.
 *  Parámetros --> Input asociado al evento(event).
@@ -677,7 +631,6 @@ document.getElementById("inputVolumen").addEventListener("input", barraProgresoV
 function barraProgresoVolumen(event) {
 
     let nivelVolumen = event.target;
-    console.log(nivelVolumen);
     let cancionactiva = document.getElementById("cancionActiva");
     cancionactiva.volume = nivelVolumen.value;
     nivelVolumen.style.background = `linear-gradient(to right, black ${nivelVolumen.value * 100}%, grey ${nivelVolumen.value * 100}%)`;
@@ -687,10 +640,17 @@ function barraProgresoVolumen(event) {
 /* -------------------------------------------------- [ CANCION ] ----------------------------------------------------- */
 
 /* Función asignarCover()
-*  ¿Qué hace? --> Obtiene el elemento donde va a ir la imagen de la portada y le asigna el src(path) obtenido del parámetro.
+*  ¿Qué hace? --> Obtiene el contenedor principal donde va a ir la imagen y lo limpia previamente, crea la imagen y le
+*                 asigna un id para poder seleccionarla. Una vez seleccionada por el id le asigna el src(path) obtenido
+*                 del parámetro.
 *  Parámetros --> El path de la imagen de la canción actual.
 */
 function asignarCover(path) {
+    let contenedorImg = document.getElementById("container-img");
+    contenedorImg.innerHTML = "";
+    let img = document.createElement("img");
+    img.id = "imagenCover";
+    contenedorImg.appendChild(img);
     let cover = document.getElementById("imagenCover");
     cover.src = path;
 }
@@ -849,10 +809,11 @@ function cambiarAleatoria(canciones) {
 function actualizarCancion(cancion) {
     let audio = document.getElementById("cancionActiva");
     audio.src = cancion.filepath;
-    cambiarBotones();
     destacarCancionActiva(`fila-${cancion.id}`);
     asignarCover(cancion.cover);
     asignarNombre(cancion.title, cancion.artist);
+    cambiarBotones();
+
 }
 
 /* Función cambiarAleatorioBucle()
@@ -867,9 +828,7 @@ document.getElementById("repetir").addEventListener("click", cambiarAleatorioBuc
 function cambiarAleatorioBucle(element) {
     let iconoPulsado = element.target;
     let botonPulsado = iconoPulsado.parentElement;
-    let otroBoton = document.getElementById(`${botonPulsado.id === "repetir" ? "aleatorio" : "repetir"}`)
-    //console.log("boton 1", botonPulsado);
-    //console.log("boton 2", otroBoton);
+    let otroBoton = document.getElementById(`${botonPulsado.id === "repetir" ? "aleatorio" : "repetir"}`);
 
     let audio = document.getElementById("cancionActiva");
 
@@ -885,8 +844,6 @@ function cambiarAleatorioBucle(element) {
         otroBoton.setAttribute("data-value", "false");
     }
 
-    //console.log(`Cambiar valor boton ${botonPulsado.name}`, botonPulsadoValor);
-    //console.log(`Cambiar valor boton ${otroBoton.name}`, otroBotonValor);
 }
 
 /* -------------------------------------------------- [ FILTRO ] ----------------------------------------------------- */
