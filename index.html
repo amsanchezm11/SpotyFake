@@ -9,8 +9,10 @@
     <link rel="stylesheet" href="CSS/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
     <script type="module" src="JS/script.js" defer></script>
 </head>
 
@@ -54,14 +56,23 @@
         </section>
     </main>
     <aside>
-        <div class="container-filtros">
-            <ul id="lista"><button id="filtros" class="filtros">
-                    <p>▶ Filtros</p>
-                </button>
-                <li id="todasCanciones" class="oculto"><a href="#">Todos</a></li>
-                <li id="favoritas" class="oculto"><a href="#">Favoritos</a></li>
-            </ul>
+        <div class="container-boton-filtro">
+            <div class="container-colores">
+                <button>🔴</button>
+                <button>🟡</button>
+                <button>🟢</button>
+            </div>
+
+            <div class="container-filtros">
+                <ul id="lista"><button id="filtros" class="filtros">
+                        <p>▶ Filtros</p>
+                    </button>
+                    <li id="todasCanciones" class="oculto"><a href="#">Todos</a></li>
+                    <li id="favoritas" class="oculto"><a href="#">Favoritos</a></li>
+                </ul>
+            </div>
         </div>
+
         <div id="container-img" class="container-img-aside"></div>
     </aside>
     <footer>
@@ -71,11 +82,13 @@
         </div>
         <div id="reproductor">
             <div class="container-botones">
-                <button id="repetir" name="repetir" data-value="false"><i class="fa-solid fa-repeat botonBlanco"></i></button>
+                <button id="repetir" name="repetir" data-value="false"><i
+                        class="fa-solid fa-repeat botonBlanco"></i></button>
                 <button id="atras"><i class="fa-solid fa-backward"></i></button>
                 <button id="play"><i class="fa-solid fa-play"></i></button>
                 <button id="adelante"><i class="fa-solid fa-forward"></i></button>
-                <button id="aleatorio" name="aleatorio" data-value="false"><i class="fa-solid fa-shuffle botonBlanco"></i></button>
+                <button id="aleatorio" name="aleatorio" data-value="false"><i
+                        class="fa-solid fa-shuffle botonBlanco"></i></button>
             </div>
             <div class="container-progreso">
                 <p id="tiempoActual">0:00</p>
@@ -85,7 +98,7 @@
         </div>
         <div id="volumen">
             <i id="icono-volumen" class="botonBlanco fa-solid fa-volume-low"></i>
-            <input type="range" name="volumen" id="inputVolumen" class="volumen"  min="0" max="1" step="0.01" value="1">
+            <input type="range" name="volumen" id="inputVolumen" class="volumen" min="0" max="1" step="0.01" value="1">
         </div>
         <audio id="cancionActiva"></audio>
     </footer>

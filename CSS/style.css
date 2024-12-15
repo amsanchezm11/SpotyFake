@@ -276,6 +276,29 @@ aside {
     box-shadow: inset -4px 0px 10px rgba(0, 0, 0, 0.5);
 }
 
+.container-boton-filtro{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 250px;
+}
+
+.container-colores{
+    display: flex;
+    flex-direction: row;
+    justify-content: left;
+    align-items: left;
+    width: 100%;
+    margin: 5px 0px 15px 20px;
+}
+
+.container-colores button{
+    background: none;
+    border: none;
+}
+
 .container-img-aside {
     height: 35%;
     width: 100%;
@@ -293,7 +316,7 @@ aside {
 
 .container-filtros {
     background-color: var(--color-cuaternario);
-    margin-top: 30px;
+    
     width: 90%;
     border-radius: 5px;
 }
@@ -618,6 +641,69 @@ input[type="range"]::-webkit-slider-runnable-track {
 }
 
 /* --------------------------------------------- [MEDIA QUERIES] ------------------------------------------------------ */
+
+/* --------------------------------------------- [ 1440x900 ] ------------------------------------------------------- */
+@media (max-width: 1440px) and (max-height: 900px) {
+
+    body {
+        grid-template-rows: auto 1fr auto;
+        grid-template-columns: 250px 1fr;
+        grid-template-areas:
+            "aside header"
+            "aside main"
+            "footer footer";
+        /*He tenido que poner 894px ya que si pongo 900px me salia la barra de navegación lateral */
+        max-height: 894px;
+    }
+
+    aside {
+        width: 250px;
+    }
+
+    section {
+        padding: 15px;
+        height: 88%;
+    }
+
+    header {
+        height: 13%;
+    }
+
+    footer {
+        height: 85px;
+        padding-bottom: 10px;
+    }
+
+    .container-img-aside {
+        height: 25%; 
+        width: 100%; 
+        background-color: var(--color-primario);
+        display: flex; 
+        justify-content: center;
+        align-items: center; 
+        box-shadow: inset -3px 0px 8px rgba(0, 0, 0, 0.4); 
+        margin: 10px auto 0px auto; 
+    }
+
+    #repetir,
+    #atras,
+    #play,
+    #adelante,
+    #aleatorio {
+        background-color: transparent;
+    }
+
+
+    #repetir:hover,
+    #atras:hover,
+    #play:hover,
+    #adelante:hover,
+    #aleatorio:hover {
+        background-color: transparent;
+       
+    }
+}
+
 /* --------------------------------------------- [ 414x896 ] ------------------------------------------------------- */
 
 @media (max-width: 414px) and (max-height: 896px) {
@@ -652,8 +738,16 @@ input[type="range"]::-webkit-slider-runnable-track {
         align-items: center;
     }
 
+    .container-colores{
+        display: none; 
+    }
+
+    .container-boton-filtro{
+        width: 400px;
+    }
+
     .container-filtros {
-        background-color: var(--color-cuaternario);   
+        background-color: var(--color-cuaternario);
         border-radius: 5px;
         margin: 20px 0px 5px 0px;
         width: 85%;
@@ -663,14 +757,14 @@ input[type="range"]::-webkit-slider-runnable-track {
     }
 
     .container-img-aside {
-        height: 270px;
+        height: 285px;
         display: flex;
         justify-content: center;
         align-items: center;
         margin: 0;
     }
 
-    .container-filtros ul{
+    .container-filtros ul {
         height: 10px;
     }
 
@@ -686,7 +780,7 @@ input[type="range"]::-webkit-slider-runnable-track {
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
         z-index: 10;
         padding-top: 5px;
-        margin-top: -5px ;
+        margin-top: -5px;
     }
 
     .container-img-aside img {
@@ -800,6 +894,7 @@ input[type="range"]::-webkit-slider-runnable-track {
 
 }
 
+/* --------------------------------------------- [ 360x640 ] ------------------------------------------------------- */
 
 @media (max-width: 360px) and (max-height: 640px) {
 
@@ -834,6 +929,14 @@ input[type="range"]::-webkit-slider-runnable-track {
         position: relative;
     }
 
+    .container-colores{
+        display: none; 
+    }
+
+    .container-boton-filtro{
+        width: 350px;
+    }
+
     .container-filtros {
         background-color: var(--color-cuaternario);
         margin: 20px 0px 5px 0px;
@@ -843,7 +946,7 @@ input[type="range"]::-webkit-slider-runnable-track {
         height: 30px;
     }
 
-    .container-filtros ul{
+    .container-filtros ul {
         height: 10px;
     }
 
@@ -859,7 +962,7 @@ input[type="range"]::-webkit-slider-runnable-track {
         box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
         z-index: 10;
         padding-top: 5px;
-        margin-top: -5px ;
+        margin-top: -5px;
     }
 
     .container-img-aside {

@@ -18,6 +18,7 @@ window.addEventListener("load", async (event) => {
     canciones = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
     crearTabla();
     rellenarTabla(canciones);
+
 });
 
 /* Función buscarCancionFiltro()
@@ -25,15 +26,23 @@ window.addEventListener("load", async (event) => {
 *                 canciones de la bbdd que coinciden con ese valor y muestra los resultados.
 *  Parámetros --> El valor que el usuario ha escrito en el formulario(event).
 */
-document.getElementById("buscarCancion").addEventListener("input", (event) => {
+document.getElementById("buscarCancion").addEventListener("input", async (event) => {
     let filtro = event.target.value.trim();
-    mostrarResultadosCanciones(canciones, filtro);
-    let cancionesFiltradas = canciones.filter((cancion) =>
-        cancion.title.toLowerCase().includes(filtro.toLowerCase())
-    );
-
-    canciones = cancionesFiltradas;
+    if (filtro === "") {
+        canciones = await obtenerCanciones("http://informatica.iesalbarregas.com:7008/songs");
+        document.getElementById("tabla").remove();
+        crearTabla();
+        rellenarTabla(canciones);
+    } else {
+        // Si hay un filtro, mostrar canciones que coinciden
+        let cancionesFiltradas = canciones.filter((cancion) =>
+            cancion.title.toLowerCase().includes(filtro.toLowerCase())
+        );
+        canciones = cancionesFiltradas;
+        mostrarResultadosCanciones(canciones, filtro);
+    }
 });
+
 
 // Llamada a la función mostrarFavoritos()
 document.getElementById("favoritas").addEventListener("click", () => {
@@ -743,12 +752,12 @@ function cambiarSiguiente(canciones) {
 *                 de la longitud de la lista.
 *  Parámetros --> Lista de canciones de donde vamos a sacar los datos necesarios.
 */
-document.getElementById("aleatorio").addEventListener("click", () => {
+document.getElementById("aleatorio").addEventListener("click", () => {   
     cambiarAleatoria(canciones);
 });
 function cambiarAleatoria(canciones) {
-    let indice;
 
+    let indice;   
     do {
         indice = Math.floor(Math.random() * canciones.length);
     } while (indice === indiceActual);
